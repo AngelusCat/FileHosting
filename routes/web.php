@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('home');
 });
-Route::post('/uploadFile', function (\Illuminate\Http\Request $request) {
-    dump($request);
+Route::post('/uploadFile', [\App\Http\Controllers\FileHostingController::class, 'uploadFile']);
+
+Route::get('/test', function () {
+    //
 });
