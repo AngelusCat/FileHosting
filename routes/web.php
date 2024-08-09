@@ -22,3 +22,7 @@ Route::post('/uploadFile', [\App\Http\Controllers\FileHostingController::class, 
 Route::get('/test', function () {
     //
 });
+
+Route::get('/generatePassword', function () {
+    return response()->json(['password' => '123456']);
+});

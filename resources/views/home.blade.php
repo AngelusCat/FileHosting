@@ -20,21 +20,27 @@
             <input type="radio" name="viewingStatus" value="private" id="privateRadio">Приватный
         <div style="display: none" id="visibilityPassword">
             <p>Введите пароль: </p>
-            <input type="text" name="visibilityPassword" form="form">
+            <input type="text" name="visibilityPassword" form="form" id="passwordInput">
+            <button type="button" id="generatePassword">Сгенерировать пароль</button>
         </div>
         </p>
-        <button>Отправить</button>
+        <button type="submit">Отправить</button>
     </form>
     <script>
         let publicRadio = document.getElementById('publicRadio');
         let privateRadio = document.getElementById('privateRadio');
         let div = document.getElementById('visibilityPassword');
+        let generatePassword = document.getElementById('generatePassword');
+
 
         publicRadio.addEventListener('click', function () {
             div.setAttribute('style', 'display: none');
         });
         privateRadio.addEventListener('click', function () {
             div.setAttribute('style', 'display: run-in');
+        });
+        generatePassword.addEventListener('click', function () {
+            fetch('/generatePassword').then(response => response.json()).then(password => .setAttribute('value', password.password));
         });
     </script>
 </body>
