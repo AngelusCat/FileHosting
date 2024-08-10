@@ -12,12 +12,11 @@ class FileHostingController extends Controller
 {
     private FileSystem $fileSystem;
     private FileDB $fileDB;
-    private GuarantorOfFileAccessRights $guarantorOfFileAccessRights;
-    public function __construct(FileSystem $fileSystem, FileDB $fileDB, GuarantorOfFileAccessRights $guarantorOfFileAccessRights)
+
+    public function __construct(FileSystem $fileSystem, FileDB $fileDB)
     {
         $this->fileSystem = $fileSystem;
         $this->fileDB = $fileDB;
-        $this->guarantorOfFileAccessRights = $guarantorOfFileAccessRights;
     }
     public function uploadFile(Request $request): void
     {
@@ -31,6 +30,6 @@ class FileHostingController extends Controller
         $fileId = $this->fileDB->save($file);
 
         $file->setId($fileId);
-        $this->guarantorOfFileAccessRights->setAccessRights($file);
+        $file->setAccessRights();
     }
 }

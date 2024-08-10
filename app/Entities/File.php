@@ -41,6 +41,11 @@ class File
         $this->content = $file->getContent();
     }
 
+    public function setAccessRights(): void
+    {
+        $this->visibility->setAccessRights($this->id);
+    }
+
     /**
      * @return string
      */
