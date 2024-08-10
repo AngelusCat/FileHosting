@@ -44,7 +44,7 @@ class File
     /**
      * @return string
      */
-    public function getFakeName(): string
+    public function getFakeName(): ?string
     {
         return $this->fakeName;
     }

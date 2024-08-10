@@ -16,9 +16,9 @@ class GuarantorOfFileAccessRights
     public function setAccessRights(File $file): void
     {
         $accessRights = $file->getVisibilityStatus()->name;
-        $fileId = $file->getId();
-        $password = $file->getPassword();
         if ($accessRights === 'private') {
+            $fileId = $file->getId();
+            $password = $file->getPassword();
             $this->privateFilePasswordsDB->save($fileId, $password);
         }
     }
