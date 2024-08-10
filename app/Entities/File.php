@@ -6,6 +6,7 @@ use App\Enums\Disk;
 use App\Enums\SecurityStatus;
 use App\Enums\VisibilityStatus;
 use App\Interfaces\Antivirus;
+use App\Services\DB\PrivateFilePasswordsDB;
 use App\Services\VirusTotal;
 use App\ValueObjects\Visibility;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class File
         $this->description = trim($request->input('description') ?? '');
         $this->size = $file->getSize();
         $this->securityStatus = $antivirus->check();
-        $this->visibility = new Visibility($request->input('viewingStatus'), $request->input('visibilityPassword'));
+        $this->visibility = new Visibility(new PrivateFilePasswordsDB(), $request->input('viewingStatus'), $request->input('visibilityPassword'));
         $this->content = $file->getContent();
     }
 

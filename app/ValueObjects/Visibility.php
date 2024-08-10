@@ -11,7 +11,7 @@ class Visibility
     private ?string $password = NULL;
     private PrivateFilePasswordsDB $privateFilePasswordsDB;
 
-    public function __construct(string $customVisibilityStatus, PrivateFilePasswordsDB $privateFilePasswordsDB, ?string $password = NULL)
+    public function __construct(PrivateFilePasswordsDB $privateFilePasswordsDB, string $customVisibilityStatus, ?string $password = NULL)
     {
         $this->visibilityStatus = ($customVisibilityStatus === 'public') ? VisibilityStatus::public : VisibilityStatus::private;
         $this->privateFilePasswordsDB = $privateFilePasswordsDB;
