@@ -8,7 +8,7 @@ use App\Services\DB\PrivateFilePasswordsDB;
 class Visibility
 {
     private VisibilityStatus $visibilityStatus;
-    private ?string $password = NULL;
+    private ?string $password;
     private PrivateFilePasswordsDB $privateFilePasswordsDB;
 
     public function __construct(PrivateFilePasswordsDB $privateFilePasswordsDB, string $customVisibilityStatus, ?string $password = NULL)
