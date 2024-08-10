@@ -31,7 +31,7 @@
         let privateRadio = document.getElementById('privateRadio');
         let div = document.getElementById('visibilityPassword');
         let generatePassword = document.getElementById('generatePassword');
-
+        let passwordInput = document.getElementById('passwordInput');
 
         publicRadio.addEventListener('click', function () {
             div.setAttribute('style', 'display: none');
@@ -40,7 +40,7 @@
             div.setAttribute('style', 'display: run-in');
         });
         generatePassword.addEventListener('click', function () {
-            fetch('/generatePassword').then(response => response.json()).then(password => .setAttribute('value', password.password));
+            fetch('/generatePassword').then(response => response.json()).then(password => passwordInput.setAttribute('value', password.password));
         });
     </script>
 </body>

@@ -24,5 +24,5 @@ Route::get('/test', function () {
 });
 
 Route::get('/generatePassword', function () {
-    return response()->json(['password' => '123456']);
+    return response()->json(['password' => bin2hex(random_bytes(5))]);
 });
