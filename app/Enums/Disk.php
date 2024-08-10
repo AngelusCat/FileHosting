@@ -2,8 +2,8 @@
 
 namespace App\Enums;
 
-enum Disk: string
+enum Disk
 {
-    case public = 'public';
-    case local = 'local';
+    case public;
+    case local;
 }

@@ -11,7 +11,7 @@ class FileSystem
     {
         $path = ($file->isSecretPathUsed()) ? '/' . $this->getSecretPath($file->getFakeName()) : '/';
         $fileName = $file->getSaveName();
-        Storage::disk($file->getDisk()->value)->put($path . $fileName, $file->getContent());
+        Storage::disk($file->getDisk()->name)->put($path . $fileName, $file->getContent());
     }
 
     private function getSecretPath(string $fakeName): string

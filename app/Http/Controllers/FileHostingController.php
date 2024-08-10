@@ -3,21 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Entities\File;
+use App\Services\DB\FileDB;
 use App\Services\FileSystem;
+use App\Services\GuarantorOfFileAccessRights;
 use Illuminate\Http\Request;
 
 class FileHostingController extends Controller
 {
     private FileSystem $fileSystem;
-    public function __construct(FileSystem $fileSystem)
+    private FileDB $fileDB;
+    private GuarantorOfFileAccessRights $guarantorOfFileAccessRights;
+    public function __construct(FileSystem $fileSystem, FileDB $fileDB, GuarantorOfFileAccessRights $guarantorOfFileAccessRights)
     {
         $this->fileSystem = $fileSystem;
+        $this->fileDB = $fileDB;
+        $this->guarantorOfFileAccessRights = $guarantorOfFileAccessRights;
     }
     public function uploadFile(Request $request): void
     {
         dump($request);
+
         $file = new File($request);
         dump($file);
+
         $this->fileSystem->save($file);
+
+        $fileId = $this->fileDB->save($file);
+
+        $file->setId($fileId);
+        $this->guarantorOfFileAccessRights->setAccessRights($file);
     }
 }
