@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Entities\File;
 use App\Services\DB\FileDB;
 use App\Services\FileSystem;
-use App\Services\GuarantorOfFileAccessRights;
 use Illuminate\Http\Request;
 
 class FileHostingController extends Controller

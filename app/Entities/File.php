@@ -10,7 +10,6 @@ use App\Services\DB\PrivateFilePasswordsDB;
 use App\Services\VirusTotal;
 use App\ValueObjects\Visibility;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class File
 {
