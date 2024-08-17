@@ -10,14 +10,14 @@ use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
-    public function __construct(private FilesTDG $filesTDG, private SimpleDownloadableFileFactory $simpleDownloadableFileFactory){}
+    public function __construct(private readonly FilesTDG $filesTDG, private readonly SimpleDownloadableFileFactory $simpleDownloadableFileFactory){}
     public function upload(Request $request)
     {
         $downloadableFile = $this->simpleDownloadableFileFactory->create($request);
         $fileId = $downloadableFile->upload();
     }
 
-    public function unload(int $id)
+    public function unload(int $fileId)
     {
         $file = $this->filesTDG->findById($id);
     }

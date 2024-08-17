@@ -13,14 +13,9 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->string('fake_name')->nullable();
-            $table->string('original_name');
-            $table->dateTime('upload_date');
-            $table->text('description')->nullable();
-            $table->unsignedInteger('size');
             $table->enum('disk', ['public', 'local']);
-            $table->enum('security_status', ['safe', 'doubtful', 'malicious']);
-            $table->enum('visibility_status', ['public', 'private']);
+            $table->string('name_to_save');
+            $table->string('original_name');
         });
     }
 
