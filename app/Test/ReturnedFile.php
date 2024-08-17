@@ -13,6 +13,11 @@ class ReturnedFile extends File
         if ($this->disk->name === 'public') {
             return $currentPath;
         }
+        $copyPath = $this->getStartOfPath($this->disk) . '/temporaryStorage/' . $this->getFolders($this->originalName) . '/' . $this->nameToSave;
+        copy($currentPath, $copyPath);
+        $renamePath = $this->getStartOfPath($this->disk) . '/temporaryStorage/' . $this->getFolders($this->originalName) . '/' . $this->originalName;
+        rename($copyPath, $renamePath);
+        return $renamePath;
     }
 
     private function getStartOfPath(Disk $disk): string
