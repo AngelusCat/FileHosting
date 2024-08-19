@@ -7,7 +7,7 @@ use app\Test\File;
 
 class ReturnedFile extends File
 {
-    public function unload(): string
+    public function getPathToDownloadFile(): string
     {
         $currentPath = $this->getStartOfPath($this->disk) . '/' . $this->getFolders($this->nameToSave) . '/' . $this->nameToSave;
         if ($this->disk->name === 'public') {
@@ -18,6 +18,11 @@ class ReturnedFile extends File
         $renamePath = $this->getStartOfPath($this->disk) . '/temporaryStorage/' . $this->getFolders($this->originalName) . '/' . $this->originalName;
         rename($copyPath, $renamePath);
         return $renamePath;
+    }
+
+    public function getOriginalName(): string
+    {
+        return $this->originalName;
     }
 
     private function getStartOfPath(Disk $disk): string

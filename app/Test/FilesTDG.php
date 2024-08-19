@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Test;
+namespace App\Test;
 
 use App\Enums\Disk;
 use Illuminate\Support\Facades\DB;

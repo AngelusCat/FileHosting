@@ -1,7 +1,8 @@
 <?php
 
+use App\Enums\Disk;
+use App\Test\FilesTDG;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +20,15 @@ Route::get('/', function () {
 });
 Route::post('/uploadFile', [\App\Http\Controllers\FileHostingController::class, 'uploadFile']);
 
-Route::get('/test', function () {
-    //
+/*Route::get('/test', function (FilesTDG $tdg) {
+    $tdg->save(Disk::public, 'example.png', 'example.png');
 });
+
+Route::get('/showtest', function (FilesTDG $tdg) {
+    $data = $tdg->findById(1);
+    dump($data);
+    dump($data->disk);
+});*/
 
 Route::get('/generatePassword', function () {
     return response()->json(['password' => bin2hex(random_bytes(5))]);
