@@ -30,11 +30,7 @@ class FileHosting extends Controller
             'Content-Security-Policy' => "default-src 'none'; script-src 'none'; form-action 'none'",
             'Content-Disposition' => 'attachment; filename=' . $originalName
         ];
-
-        /*
-         * TODO: Storage::download указывает на диск по умолчанию, т.е. local, значит не нужно давать абсолютный путь
-         */
-
-        return Storage::download($path, $originalName, $headers);
+        
+        return Storage::disk($returnedFile->getDisk()->name)->download($path, $originalName, $headers);
     }
 }
