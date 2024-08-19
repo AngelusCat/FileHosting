@@ -1,7 +1,8 @@
 <?php
 
-namespace app\Test;
+namespace App\Factories;
 
+use App\Entities\DownloadableFile;
 use App\Enums\Disk;
 use Illuminate\Http\Request;
 

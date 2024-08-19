@@ -1,9 +1,8 @@
 <?php
 
-namespace app\Test;
+namespace App\Entities;
 
 use App\Enums\Disk;
-use app\Test\File;
 
 class ReturnedFile extends File
 {

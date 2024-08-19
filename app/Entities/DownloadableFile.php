@@ -1,8 +1,9 @@
 <?php
 
-namespace app\Test;
+namespace App\Entities;
 
 use App\Enums\Disk;
+use App\Services\FilesTDG;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadableFile extends File

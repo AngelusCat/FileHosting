@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Disk;
-use app\Test\DownloadableFile;
-use app\Test\FilesTDG;
-use app\Test\SimpleDownloadableFileFactory;
-use app\Test\SimpleReturnedFileFactory;
+use App\Factories\SimpleDownloadableFileFactory;
+use App\Factories\SimpleReturnedFileFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -14,16 +11,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /*
  * TODO: исправить неймспейсы классом с app на App
  */
-class TestController extends Controller
+class FileHosting extends Controller
 {
-    public function __construct(private readonly FilesTDG $filesTDG, private readonly SimpleDownloadableFileFactory $simpleDownloadableFileFactory, private SimpleReturnedFileFactory $simpleReturnedFileFactory){}
+    public function __construct(private readonly SimpleDownloadableFileFactory $simpleDownloadableFileFactory, private readonly SimpleReturnedFileFactory $simpleReturnedFileFactory){}
     public function upload(Request $request): void
     {
         $downloadableFile = $this->simpleDownloadableFileFactory->create($request);
         $fileId = $downloadableFile->upload();
     }
 
-    public function unload(int $fileId): StreamedResponse
+    public function download(int $fileId): StreamedResponse
     {
         $returnedFile = $this->simpleReturnedFileFactory->create($fileId);
         $path = $returnedFile->getPathToDownloadFile();
