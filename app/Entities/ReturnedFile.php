@@ -9,11 +9,11 @@ class ReturnedFile extends File
 {
     public function getPathToDownloadFile(): string
     {
-        $currentPath = $this->getStartOfPath($this->disk) . '/' . $this->getFolders($this->nameToSave) . $this->nameToSave;
-
         if ($this->disk->name === 'public') {
             return $this->getFolders($this->nameToSave) . $this->nameToSave;
         }
+
+        $currentPath = $this->getStartOfPath($this->disk) . '/' . $this->getFolders($this->nameToSave) . $this->nameToSave;
 
         Storage::makeDirectory('temporaryStorage/' . $this->getFolders($this->originalName));
 

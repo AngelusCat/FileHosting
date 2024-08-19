@@ -30,7 +30,7 @@ class FileHosting extends Controller
             'Content-Security-Policy' => "default-src 'none'; script-src 'none'; form-action 'none'",
             'Content-Disposition' => 'attachment; filename=' . $originalName
         ];
-        
+
         return Storage::disk($returnedFile->getDisk()->name)->download($path, $originalName, $headers);
     }
 }
