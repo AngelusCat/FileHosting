@@ -4,6 +4,7 @@ namespace App\Factories;
 
 use App\Entities\DownloadableFile;
 use App\Enums\Disk;
+use App\Services\FilesTDG;
 use Illuminate\Http\Request;
 
 class SimpleDownloadableFileFactory
@@ -21,6 +22,6 @@ class SimpleDownloadableFileFactory
         $nameToSave = ($disk->name === 'public') ? $originalName : preg_split('/\.[A-Za-z0-9]{1,4}$/', $fileFromForm->hashName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $content = $fileFromForm->getContent();
 
-        return new DownloadableFile($disk, $nameToSave, $originalName, $content);
+        return new DownloadableFile($disk, $nameToSave, $originalName, $content, new FilesTDG());
     }
 }

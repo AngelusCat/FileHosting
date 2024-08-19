@@ -11,10 +11,11 @@ class DownloadableFile extends File
     private string $content;
 
     private FilesTDG $filesTDG;
-    public function __construct(Disk $disk, string $nameToSave, string $originalName, string $content)
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, string $content, FilesTDG $filesTDG)
     {
         parent::__construct($disk, $nameToSave, $originalName);
         $this->content = $content;
+        $this->filesTDG = $filesTDG;
     }
 
     public function upload(): int
