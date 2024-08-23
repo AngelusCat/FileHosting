@@ -20,7 +20,7 @@ class FileHosting extends Controller
         $fileId = $downloadableFile->upload();
     }
 
-    public function download(int $fileId): StreamedResponse
+    public function download(int $fileId)
     {
         $returnedFile = $this->simpleReturnedFileFactory->create($fileId);
         $path = $returnedFile->getPathToDownloadFile();
@@ -31,6 +31,10 @@ class FileHosting extends Controller
             'Content-Disposition' => 'attachment; filename=' . $originalName
         ];
 
-        return Storage::disk($returnedFile->getDisk()->name)->download($path, $originalName, $headers);
+        dump($path);
+
+        return response()->download($path, $originalName, $headers)->deleteFileAfterSend(true);
+
+        //return Storage::disk($returnedFile->getDisk()->name)->download($path, $originalName, $headers);
     }
 }

@@ -9,11 +9,13 @@ class ReturnedFile extends File
 {
     public function getPathToDownloadFile(): string
     {
+        $currentPath = $this->getStartOfPath($this->disk) . '/' . $this->getFolders($this->nameToSave) . $this->nameToSave;
+
         if ($this->disk->name === 'public') {
-            return $this->getFolders($this->nameToSave) . $this->nameToSave;
+            return $currentPath;
         }
 
-        $currentPath = $this->getStartOfPath($this->disk) . '/' . $this->getFolders($this->nameToSave) . $this->nameToSave;
+        //$currentPath = $this->getStartOfPath($this->disk) . '/' . $this->getFolders($this->nameToSave) . $this->nameToSave;
 
         Storage::makeDirectory('temporaryStorage/' . $this->getFolders($this->originalName));
 
@@ -23,7 +25,8 @@ class ReturnedFile extends File
         $renamePath = $this->getStartOfPath($this->disk) . '/temporaryStorage/' . $this->getFolders($this->originalName) . $this->originalName;
         rename($copyPath, $renamePath);
 
-        return '/temporaryStorage/' . $this->getFolders($this->originalName) . $this->originalName;
+        //return '/temporaryStorage/' . $this->getFolders($this->originalName) . $this->originalName;
+        return $renamePath;
     }
 
     public function getOriginalName(): string
