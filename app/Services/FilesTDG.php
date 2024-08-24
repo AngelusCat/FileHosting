@@ -9,7 +9,7 @@ class FilesTDG
 {
     private string $tableName = 'files';
 
-    public function save(Disk $disk, string $nameToSave, string $originalName): int
+    public function save(Disk $disk, string $nameToSave, string $originalName = ""): int
     {
         return DB::table($this->tableName)->insertGetId([
             'disk' => $disk->name,
