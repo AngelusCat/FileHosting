@@ -1,10 +1,8 @@
 <?php
 
-namespace App\newDesign;
+namespace App\Entities;
 
 use App\Enums\Disk;
-use App\newDesign\File;
-use App\Services\FilesTDG;
 use Illuminate\Support\Facades\Storage;
 
 class LocalFile extends File
@@ -16,12 +14,6 @@ class LocalFile extends File
         parent::__construct($disk, $nameToSave);
         $this->originalName = $originalName;
     }
-
-    public function getOriginalName(): string
-    {
-        return $this->originalName;
-    }
-
     private function getFolders(string $fileName): string
     {
         return mb_substr($fileName, 0, 2) . '/' . mb_substr($fileName, 2, 2) . '/';
@@ -47,5 +39,10 @@ class LocalFile extends File
     {
         Storage::disk($this->disk->name)->put($this->getFolders($this->nameToSave) . $this->nameToSave, $content);
         $this->filesTDG->save($this->disk, $this->nameToSave, $this->originalName);
+    }
+
+    public function deleteAfterDownloading(): bool
+    {
+        return true;
     }
 }

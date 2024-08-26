@@ -2,39 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Factories\SimpleDownloadableFileFactory;
-use App\Factories\SimpleReturnedFileFactory;
+use App\Factories\SimpleFactoryFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-/*
- * TODO: исправить неймспейсы классом с app на App
- */
 class FileHosting extends Controller
 {
-    public function __construct(private readonly SimpleDownloadableFileFactory $simpleDownloadableFileFactory, private readonly SimpleReturnedFileFactory $simpleReturnedFileFactory){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile){}
+
     public function upload(Request $request): void
     {
-        $downloadableFile = $this->simpleDownloadableFileFactory->create($request);
-        $fileId = $downloadableFile->upload();
+        $fileFromForm = $request->file;
+        $file = $this->simpleFactoryFile->createByUploadFile($fileFromForm);
+        $content = $fileFromForm->getContent();
+        $file->save($content);
     }
 
-    public function download(int $fileId)
+    public function download(int $fileId): BinaryFileResponse
     {
-        $returnedFile = $this->simpleReturnedFileFactory->create($fileId);
-        $path = $returnedFile->getPathToDownloadFile();
-        $originalName = $returnedFile->getOriginalName();
-
+        $file = $this->simpleFactoryFile->createByDB($fileId);
+        $path = $file->getDownloadPath($fileId);
         $headers = [
             'Content-Security-Policy' => "default-src 'none'; script-src 'none'; form-action 'none'",
-            'Content-Disposition' => 'attachment; filename=' . $originalName
+            'Content-Disposition' => 'attachment;'
         ];
 
-        dump($path);
-
-        return response()->download($path, $originalName, $headers)->deleteFileAfterSend(true);
-
-        //return Storage::disk($returnedFile->getDisk()->name)->download($path, $originalName, $headers);
+        return ($file->deleteAfterDownloading()) ? response()->download($path, null, $headers)->deleteFileAfterSend(true)
+            : response()->download($path, null, $headers);
     }
 }

@@ -1,8 +1,11 @@
 <?php
 
-namespace App\newDesign;
+namespace App\Factories;
 
 use App\Enums\Disk;
+use App\Entities\File;
+use App\Entities\LocalFile;
+use App\Entities\PublicFile;
 use App\Services\FilesTDG;
 use Illuminate\Http\UploadedFile;
 
@@ -31,7 +34,6 @@ class SimpleFactoryFile
     public function createByDB(int $fileId): File
     {
         $data = $this->filesTDG->findById($fileId);
-
         $disk = ($data->disk === 'public') ? Disk::public : Disk::local;
 
         if ($data->original_name === "") {
