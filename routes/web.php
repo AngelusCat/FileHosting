@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FileHosting;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('home');
 });
-Route::post('/uploadFile', [FileHosting::class, 'upload']);
+/*Route::post('/uploadFile', [FileHosting::class, 'upload']);
 
-Route::get('/downloadFile/{file_id}', [FileHosting::class, 'download']);
+Route::get('/downloadFile/{file_id}', [FileHosting::class, 'download']);*/
+
+Route::post('/uploadFile', [TestController::class, 'upload']);
+
+Route::get('/downloadFile/{file_id}', [TestController::class, 'download']);
 
 /*Route::get('/test', function (FilesTDG $tdg) {
     $tdg->save(Disk::public, 'example.png', 'example.png');

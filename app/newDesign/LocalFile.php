@@ -2,12 +2,25 @@
 
 namespace App\newDesign;
 
+use App\Enums\Disk;
 use App\newDesign\File;
+use App\Services\FilesTDG;
 use Illuminate\Support\Facades\Storage;
 
 class LocalFile extends File
 {
     private string $originalName;
+
+    public function __construct(Disk $disk, string $nameToSave, string $originalName)
+    {
+        parent::__construct($disk, $nameToSave);
+        $this->originalName = $originalName;
+    }
+
+    public function getOriginalName(): string
+    {
+        return $this->originalName;
+    }
 
     private function getFolders(string $fileName): string
     {
