@@ -3,18 +3,20 @@
 namespace App\Services;
 
 use App\Enums\Disk;
+use App\Enums\SecurityStatus;
 use Illuminate\Support\Facades\DB;
 
 class FilesTDG
 {
     private string $tableName = 'files';
 
-    public function save(Disk $disk, string $nameToSave, string $originalName = ""): int
+    public function save(Disk $disk, string $nameToSave, string $originalName = "", SecurityStatus $securityStatus = NULL): int
     {
         return DB::table($this->tableName)->insertGetId([
             'disk' => $disk->name,
             'name_to_save' => $nameToSave,
-            'original_name' => $originalName
+            'original_name' => $originalName,
+            'security_status' => ($securityStatus === NULL) ? NULL : $securityStatus->name
         ]);
     }
 

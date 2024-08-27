@@ -16,6 +16,7 @@ return new class extends Migration
             $table->enum('disk', ['public', 'local']);
             $table->string('name_to_save');
             $table->string('original_name');
+            $table->enum('security_status', ['safe', 'doubtful', 'malicious'])->nullable();
         });
     }
 

@@ -16,5 +16,5 @@ Route::get('/generatePassword', function () {
 
 Route::get('test', function () {
     $vt = new \App\Services\VirusTotal();
-    $vt->check('17056900752890.png', "C:/localhost/file/storage/app/public/images/17056900752890.png");
+    dump($vt->getSecurityStatus('17056900752890.png', "C:/localhost/file/storage/app/public/images/17056900752890.png"));
 });

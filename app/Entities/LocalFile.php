@@ -38,7 +38,8 @@ class LocalFile extends File
     public function save(string $content): void
     {
         Storage::disk($this->disk->name)->put($this->getFolders($this->nameToSave) . $this->nameToSave, $content);
-        $this->filesTDG->save($this->disk, $this->nameToSave, $this->originalName);
+        $securityStatus = $this->antivirus->getSecurityStatus($this->nameToSave, $content);
+        $this->filesTDG->save($this->disk, $this->nameToSave, $this->originalName, $securityStatus);
     }
 
     public function deleteAfterDownloading(): bool
