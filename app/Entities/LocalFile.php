@@ -3,15 +3,16 @@
 namespace App\Entities;
 
 use App\Enums\Disk;
+use App\Enums\SecurityStatus;
 use Illuminate\Support\Facades\Storage;
 
 class LocalFile extends File
 {
     private string $originalName;
 
-    public function __construct(Disk $disk, string $nameToSave, string $originalName)
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, SecurityStatus $securityStatus = SecurityStatus::unknown)
     {
-        parent::__construct($disk, $nameToSave);
+        parent::__construct($disk, $nameToSave, $securityStatus);
         $this->originalName = $originalName;
     }
     private function getFolders(string $fileName): string
@@ -38,8 +39,8 @@ class LocalFile extends File
     public function save(string $content): void
     {
         Storage::disk($this->disk->name)->put($this->getFolders($this->nameToSave) . $this->nameToSave, $content);
-        $securityStatus = $this->antivirus->getSecurityStatus($this->nameToSave, $content);
-        $this->filesTDG->save($this->disk, $this->nameToSave, $this->originalName, $securityStatus);
+        $this->securityStatus = $this->antivirus->getSecurityStatus($this->nameToSave, $content);
+        $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName);
     }
 
     public function deleteAfterDownloading(): bool

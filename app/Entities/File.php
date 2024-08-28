@@ -14,12 +14,14 @@ abstract class File
     protected string $nameToSave;
     protected FilesTDG $filesTDG;
     protected Antivirus  $antivirus;
+    protected SecurityStatus $securityStatus;
 
-    public function __construct(Disk $disk, string $nameToSave) {
+    public function __construct(Disk $disk, string $nameToSave, SecurityStatus $securityStatus = SecurityStatus::unknown) {
         $this->disk = $disk;
         $this->nameToSave = $nameToSave;
         $this->filesTDG = new FilesTDG();
         $this->antivirus = new VirusTotal();
+        $this->securityStatus = $securityStatus;
     }
 
     abstract public function getDownloadPath(int $id): string;

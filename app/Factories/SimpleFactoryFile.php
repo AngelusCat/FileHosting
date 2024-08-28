@@ -6,6 +6,7 @@ use App\Enums\Disk;
 use App\Entities\File;
 use App\Entities\LocalFile;
 use App\Entities\PublicFile;
+use App\Enums\SecurityStatus;
 use App\Services\FilesTDG;
 use Illuminate\Http\UploadedFile;
 
@@ -34,12 +35,13 @@ class SimpleFactoryFile
     public function createByDB(int $fileId): File
     {
         $data = $this->filesTDG->findById($fileId);
-        $disk = ($data->disk === 'public') ? Disk::public : Disk::local;
+        $disk = Disk::getDiskByStringDisk($data->disk);
+        $securityStatus = SecurityStatus::getSecurityStatusByStringStatus($data->security_status);
 
-        if ($data->original_name === "") {
-            return new PublicFile($disk, $data->name_to_save);
+        if ($data->original_name === NULL) {
+            return new PublicFile($disk, $data->name_to_save, $securityStatus);
         } else {
-            return new LocalFile($disk, $data->name_to_save, $data->original_name);
+            return new LocalFile($disk, $data->name_to_save, $data->original_name, $securityStatus);
         }
     }
 }
