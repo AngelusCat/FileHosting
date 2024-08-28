@@ -5,53 +5,50 @@ namespace App\Services;
 use App\Entities\File;
 use App\Enums\SecurityStatus;
 use App\Interfaces\Antivirus;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class VirusTotal implements Antivirus
 {
     private string $apiKey;
+    private string $endPoint = "https://www.virustotal.com/api/v3/files";
 
     public function __construct()
     {
         $this->apiKey = env('VIRUS_TOTAL_API_KEY');
     }
 
-    public function getSecurityStatus(string $fileName, string $content): SecurityStatus
+    public function getSecurityStatus(string $fileName, string $fileContent): SecurityStatus
     {
-        $resultUrl = $this->check($fileName, $content);
-        dump($resultUrl);
-        $result = $this->getAnalysisById($resultUrl);
-        dump($result->json()["data"]["attributes"]["stats"]);
-        $malicious = $result->json()["data"]["attributes"]["stats"]["malicious"];
-        $suspicious = $result->json()["data"]["attributes"]["stats"]["suspicious"];
-        dump($malicious);
-        dump($suspicious);
-        if ($malicious === 0 && $suspicious === 0) {
-            return SecurityStatus::safe;
-        } elseif ($malicious === 0 && $suspicious !== 0) {
-            return SecurityStatus::doubtful;
-        } else {
-            return SecurityStatus::malicious;
-        }
-//        return SecurityStatus::safe;
+        $analysisUrl = $this->checkFile($fileName, $fileContent);
+        $analysisResult = $this->getAnalysisByUrl($analysisUrl);
+
+        $malicious = $analysisResult["data.attributes.stats.malicious"];
+        $suspicious = $analysisResult["data.attributes.stats.suspicious"];
+
+        return ($malicious > 0) ? SecurityStatus::malicious : (($malicious === 0 && $suspicious > 0) ? SecurityStatus::doubtful : SecurityStatus::safe);
+
     }
 
-    public function check(string $name, string $content)
+    private function checkFile(string $fileName, string $fileContent): string
     {
         $response = Http::attach(
-            'file', $content, $name
+            'file', $fileContent, $fileName
         )->withHeaders([
             'x-apikey' => $this->apiKey
-        ])->post('https://www.virustotal.com/api/v3/files');
-       $result = json_decode($response->body(), true);
-       $url = $result["data"]["links"]["self"];
-       return $url;
+        ])->post($this->endPoint);
+
+        $response = collect(json_decode($response->body(), true))->dot();
+
+        return $response["data.links.self"];
     }
 
-    private function getAnalysisById(string $url)
+    private function getAnalysisByUrl(string $analysisUrl): Collection
     {
-        return $response = Http::withHeaders([
+        $response = Http::withHeaders([
             'x-apikey' => $this->apiKey
-        ])->get($url);
+        ])->get($analysisUrl);
+
+        return collect(json_decode($response->body(), true))->dot();
     }
 }
