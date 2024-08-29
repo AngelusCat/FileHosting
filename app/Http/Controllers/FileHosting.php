@@ -16,19 +16,21 @@ class FileHosting extends Controller
         $file = $this->simpleFactoryFile->createByUploadFile($fileFromForm);
         $content = $fileFromForm->getContent();
         $file->save($content);
-
+        
         /**
          * TODO: написать код, который будет возвращать ID нового файла
          */
 
-        return response()->json([
-            'data' => [
-                'id' => 1,
-                'links' => [
-                    'self' => 'http://file/files/ID/content'
+        if ($request->url() === "http://file/api/files") {
+            return response()->json([
+                'data' => [
+                    'id' => 1,
+                    'links' => [
+                        'self' => 'http://file/files/ID/content'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
+        }
     }
 
     public function download(int $fileId): BinaryFileResponse
