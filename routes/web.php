@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FileHosting;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,4 +13,13 @@ Route::get('/downloadFile/{file_id}', [FileHosting::class, 'download']);
 
 Route::get('/generatePassword', function () {
     return response()->json(['password' => bin2hex(random_bytes(5))]);
+});
+
+Route::get('/testApi', function () {
+    $fileName = "welcome.blade.php";
+    $contents = file_get_contents("C:/localhost/file/resources/views/welcome.blade.php");
+    $status = "public";
+    $response = Http::attach(
+        'file', $contents, $fileName
+    )->post("http://file/api/files");
 });

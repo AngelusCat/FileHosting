@@ -22,7 +22,7 @@ class SimpleFactoryFile
 
         $disk = ($mimeType === 'image') ? Disk::public : Disk::local;
         $originalName = preg_replace('/ /', '_', $fileFromForm->getClientOriginalName());
-        $nameToSave = ($disk->name === 'public') ? $originalName : preg_split('/\.[A-Za-z0-9]{1,4}$/', $fileFromForm->hashName(), -1, PREG_SPLIT_NO_EMPTY)[0];
+        $nameToSave = ($disk->name === 'public') ? $originalName : preg_split('/\.[A-Za-z0-9]{1,4}/', $fileFromForm->hashName(), -1, PREG_SPLIT_NO_EMPTY)[0];
 
         if ($mimeType === 'image') {
             return new PublicFile($disk, $nameToSave);
