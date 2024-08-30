@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/files', [FileHosting::class, 'upload']);
+Route::post('/files', [FileHosting::class, 'upload'])->name('api.files.post');
 
 /*
  * POST /files

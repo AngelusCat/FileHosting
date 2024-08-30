@@ -18,7 +18,7 @@ class FileHosting extends Controller
         $file->save($content);
         $fileId = $file->getId();
 
-        if ($request->url() === "http://file/api/files") {
+        if ($request->url() === route("api.files.post")) {
             return response()->json([
                 'data' => [
                     'id' => $fileId,
