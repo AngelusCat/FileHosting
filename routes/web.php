@@ -23,3 +23,5 @@ Route::get('/testApi', function () {
         'file', $contents, $fileName
     )->post("http://file/api/files");
 });
+
+Route::get('show/{file_id}', [FileHosting::class, 'show']);

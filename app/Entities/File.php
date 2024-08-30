@@ -45,8 +45,32 @@ abstract class File
         }
     }
 
+    public function getOriginalName(): string
+    {
+        return $this->originalName;
+    }
+
+    public function getSize(): int
+    {
+        return $this->size;
+    }
+
+    public function getUploadDate(): Carbon
+    {
+        return $this->uploadDate;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getSecurityStatus(): SecurityStatus
+    {
+        return $this->securityStatus;
+    }
+
     abstract public function getDownloadPath(): string;
     abstract public function save(string $content): void;
-
     abstract public function deleteAfterDownloading(): bool;
 }
