@@ -10,9 +10,9 @@ class LocalFile extends File
 {
     private string $originalName;
 
-    public function __construct(Disk $disk, string $nameToSave, string $originalName, SecurityStatus $securityStatus = SecurityStatus::unknown)
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null)
     {
-        parent::__construct($disk, $nameToSave, $securityStatus);
+        parent::__construct($disk, $nameToSave, $securityStatus, $id);
         $this->originalName = $originalName;
     }
     private function getFolders(string $fileName): string
@@ -20,18 +20,18 @@ class LocalFile extends File
         return mb_substr($fileName, 0, 2) . '/' . mb_substr($fileName, 2, 2) . '/';
     }
 
-    public function getDownloadPath(int $id): string
+    public function getDownloadPath(): string
     {
-        return $this->prepareForDownload($id);
+        return $this->prepareForDownload();
     }
 
-    private function prepareForDownload(int $id): string
+    private function prepareForDownload(): string
     {
         $savePath = storage_path("app/files/") . $this->getFolders($this->nameToSave) . $this->nameToSave;
-        $copyPath = storage_path("app/files/") . "tmp/$id/$this->nameToSave";
-        Storage::disk($this->disk->name)->makeDirectory("tmp/$id/");
+        $copyPath = storage_path("app/files/") . "tmp/$this->id/$this->nameToSave";
+        Storage::disk($this->disk->name)->makeDirectory("tmp/$this->id/");
         copy($savePath, $copyPath);
-        $renamePath = storage_path("app/files/") . "tmp/$id/$this->originalName";
+        $renamePath = storage_path("app/files/") . "tmp/$this->id/$this->originalName";
         rename($copyPath, $renamePath);
         return $renamePath;
     }
@@ -40,7 +40,7 @@ class LocalFile extends File
     {
         Storage::disk($this->disk->name)->put($this->getFolders($this->nameToSave) . $this->nameToSave, $content);
         $this->securityStatus = $this->antivirus->getSecurityStatus($this->nameToSave, $content);
-        $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName);
+        $this->id = $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName);
     }
 
     public function deleteAfterDownloading(): bool

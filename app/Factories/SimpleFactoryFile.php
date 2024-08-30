@@ -39,9 +39,9 @@ class SimpleFactoryFile
         $securityStatus = SecurityStatus::getSecurityStatusByStringStatus($data->security_status);
 
         if ($data->original_name === NULL) {
-            return new PublicFile($disk, $data->name_to_save, $securityStatus);
+            return new PublicFile($disk, $data->name_to_save, $securityStatus, $data->id);
         } else {
-            return new LocalFile($disk, $data->name_to_save, $data->original_name, $securityStatus);
+            return new LocalFile($disk, $data->name_to_save, $data->original_name, $securityStatus, $data->id);
         }
     }
 }

@@ -22,6 +22,6 @@ class FilesTDG
 
     public function findById(int $id)
     {
-        return DB::table($this->tableName)->find($id, ['disk', 'name_to_save', 'original_name', 'security_status']);
+        return DB::table($this->tableName)->find($id, ['id', 'disk', 'name_to_save', 'original_name', 'security_status']);
     }
 }
