@@ -12,9 +12,8 @@ class FileHosting extends Controller
 
     public function upload(Request $request)
     {
-        $fileFromForm = $request->file;
-        $file = $this->simpleFactoryFile->createByUploadFile($fileFromForm);
-        $content = $fileFromForm->getContent();
+        $file = $this->simpleFactoryFile->createByRequestFormData($request);
+        $content = $request->file->getContent();
         $file->save($content);
         $fileId = $file->getId();
 

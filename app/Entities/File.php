@@ -7,23 +7,33 @@ use App\Enums\SecurityStatus;
 use App\Interfaces\Antivirus;
 use App\Services\FilesTDG;
 use App\Services\VirusTotal;
+use Carbon\Carbon;
 
 abstract class File
 {
     protected ?int $id;
     protected Disk $disk;
     protected string $nameToSave;
+    protected SecurityStatus $securityStatus;
+    protected string $originalName;
+    protected int $size;
+    protected Carbon $uploadDate;
+    protected string $description;
     protected FilesTDG $filesTDG;
     protected Antivirus  $antivirus;
-    protected SecurityStatus $securityStatus;
 
-    public function __construct(Disk $disk, string $nameToSave, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null) {
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, int $size, Carbon $uploadDate, string $description, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null)
+    {
         $this->id = $id;
         $this->disk = $disk;
         $this->nameToSave = $nameToSave;
+        $this->originalName = $originalName;
+        $this->size = $size;
+        $this->uploadDate = $uploadDate;
+        $this->description = $description;
+        $this->securityStatus = $securityStatus;
         $this->filesTDG = new FilesTDG();
         $this->antivirus = new VirusTotal();
-        $this->securityStatus = $securityStatus;
     }
 
     public function getId(): ?int
