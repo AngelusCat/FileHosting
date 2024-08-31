@@ -7,6 +7,7 @@ use App\Entities\File;
 use App\Entities\LocalFile;
 use App\Entities\PublicFile;
 use App\Enums\SecurityStatus;
+use App\Enums\ViewingStatus;
 use App\Services\FilesTDG;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,11 +28,12 @@ class SimpleFactoryFile
         $size = $fileFromForm->getSize();
         $uploadDate = now();
         $description = $request->description;
+        $viewingStatus = ViewingStatus::getViewingStatusByStringStatus($request->viewingStatus);
 
         if ($mimeType === 'image') {
-            return new PublicFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description);
+            return new PublicFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description, $viewingStatus);
         } else {
-            return new LocalFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description);
+            return new LocalFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description, $viewingStatus);
         }
     }
 
@@ -46,11 +48,12 @@ class SimpleFactoryFile
         $uploadDate = new Carbon($data->upload_date);
         $description = $data->description;
         $securityStatus = SecurityStatus::getSecurityStatusByStringStatus($data->security_status);
+        $viewingStatus = ViewingStatus::getViewingStatusByStringStatus($data->viewing_status);
 
         if ($disk->name === 'public') {
-            return new PublicFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description, $securityStatus, $id);
+            return new PublicFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description, $viewingStatus, $securityStatus, $id);
         } else {
-            return new LocalFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description, $securityStatus, $id);
+            return new LocalFile($disk, $nameToSave, $originalName, $size, $uploadDate, $description, $viewingStatus, $securityStatus, $id);
         }
     }
 }

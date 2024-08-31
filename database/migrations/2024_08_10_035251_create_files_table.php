@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('size');
             $table->string('description')->nullable();
             $table->enum('security_status', ['safe', 'doubtful', 'malicious']);
+            $table->enum('viewing_status', ['public', 'private']);
         });
     }
 

@@ -4,6 +4,7 @@ namespace App\Entities;
 
 use App\Enums\Disk;
 use App\Enums\SecurityStatus;
+use App\Enums\ViewingStatus;
 use App\Interfaces\Antivirus;
 use App\Services\FilesTDG;
 use App\Services\VirusTotal;
@@ -19,10 +20,11 @@ abstract class File
     protected int $size;
     protected Carbon $uploadDate;
     protected string $description;
+    protected ViewingStatus $viewingStatus;
     protected FilesTDG $filesTDG;
     protected Antivirus  $antivirus;
 
-    public function __construct(Disk $disk, string $nameToSave, string $originalName, int $size, Carbon $uploadDate, string $description, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null)
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, int $size, Carbon $uploadDate, string $description, ViewingStatus $viewingStatus, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null)
     {
         $this->id = $id;
         $this->disk = $disk;
@@ -31,6 +33,7 @@ abstract class File
         $this->size = $size;
         $this->uploadDate = $uploadDate;
         $this->description = $description;
+        $this->viewingStatus = $viewingStatus;
         $this->securityStatus = $securityStatus;
         $this->filesTDG = new FilesTDG();
         $this->antivirus = new VirusTotal();

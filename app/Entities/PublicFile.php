@@ -14,7 +14,7 @@ class PublicFile extends File
     public function save(string $content): void
     {
         $this->securityStatus = $this->antivirus->getSecurityStatus($this->nameToSave, $content);
-        $this->id = $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName, $this->size, $this->uploadDate, $this->description);
+        $this->id = $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName, $this->size, $this->uploadDate, $this->description, $this->viewingStatus);
         Storage::disk($this->disk->name)->put("/$this->id/" . $this->nameToSave, $content);
     }
 
