@@ -29,4 +29,9 @@ class FilesTDG
     {
         return DB::table($this->tableName)->find($id, ['id', 'disk', 'name_to_save', 'original_name', 'security_status', 'upload_date', 'description', 'size', 'viewing_status']);
     }
+
+    public function getViewingStatus(int $id): string
+    {
+        return DB::table($this->tableName)->where('id', $id)->value('viewing_status');
+    }
 }
