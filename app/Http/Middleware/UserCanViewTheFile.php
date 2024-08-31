@@ -21,7 +21,9 @@ class UserCanViewTheFile
         $viewingStatus = ViewingStatus::getViewingStatusByStringStatus($this->filesTDG->getViewingStatus($request->file_id));
 
         if ($viewingStatus->name === 'private') {
-            return redirect('/');
+            if (empty($request->cookie('jwt'))) {
+                return redirect('privatePassword');
+            }
         }
 
         return $next($request);

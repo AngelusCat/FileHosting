@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->enum('security_status', ['safe', 'doubtful', 'malicious']);
             $table->enum('viewing_status', ['public', 'private']);
+            $table->foreignId('password_id')->references('id')->on('private_passwords');
         });
     }
 
