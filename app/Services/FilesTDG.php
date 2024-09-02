@@ -11,9 +11,9 @@ class FilesTDG
 {
     private string $tableName = 'files';
 
-    public function save(Disk $disk, string $nameToSave, SecurityStatus $securityStatus, string $originalName, int $size, string $uploadDate, string $description, ViewingStatus $viewingStatus): int
+    public function save(array $data): int
     {
-        return DB::table($this->tableName)->insertGetId([
+        /*return DB::table($this->tableName)->insertGetId([
             'disk' => $disk->name,
             'name_to_save' => $nameToSave,
             'original_name' => $originalName,
@@ -22,7 +22,9 @@ class FilesTDG
             'upload_date' => $uploadDate,
             'description' => $description,
             'viewing_status' => $viewingStatus->name
-        ]);
+        ]);*/
+
+        return DB::table($this->tableName)->insertGetId($data);
     }
 
     public function findById(int $id)
@@ -33,5 +35,24 @@ class FilesTDG
     public function getViewingStatus(int $id): string
     {
         return DB::table($this->tableName)->where('id', $id)->value('viewing_status');
+    }
+
+    public function getListOfFieldsToSaveByVariableNames(array $variableNames): array
+    {
+        foreach ($variableNames as $variableName) {
+            $variableNameInString = substr($variableName, 1);
+            $symbols = preg_split('//', $variableNameInString, -1, PREG_SPLIT_NO_EMPTY);
+            for ($i = 0; $i < count($symbols); $i++) {
+                if (ctype_upper($symbols[$i]) && $i !== 0) {
+                    $newSymbols[] = '_';
+                    $newSymbols[] = mb_strtolower($symbols[$i]);
+                } else {
+                    $newSymbols[] = $symbols[$i];
+                }
+            }
+            $listOfFieldsToSave[] = implode('', $newSymbols);
+            $newSymbols = [];
+        }
+        return $listOfFieldsToSave;
     }
 }

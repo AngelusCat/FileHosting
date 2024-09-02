@@ -28,3 +28,15 @@ Route::get('show/{file_id}', [FileHosting::class, 'show'])->middleware(\App\Http
 Route::get('/privatePassword', function () {
     return view('passwordForPrivateFile');
 });
+
+Route::get('/test', function () {
+
+
+    $data = [
+        '$nameToSave', '$privatePassword'
+    ];
+
+    $filesTdg = new \App\Services\FilesTDG();
+    dump($filesTdg->getListOfFieldsToSaveByVariableNames($data));
+
+});
