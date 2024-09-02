@@ -39,7 +39,7 @@ class FilesTDG
 
     public function getListOfFieldsToSaveByVariableNames(array $variableNames): array
     {
-        foreach ($variableNames as $variableName) {
+        foreach ($variableNames as $variableName => $variableValue) {
             $variableNameInString = substr($variableName, 1);
             $symbols = preg_split('//', $variableNameInString, -1, PREG_SPLIT_NO_EMPTY);
             for ($i = 0; $i < count($symbols); $i++) {
@@ -53,6 +53,7 @@ class FilesTDG
             $listOfFieldsToSave[] = implode('', $newSymbols);
             $newSymbols = [];
         }
-        return $listOfFieldsToSave;
+        $values = array_values($variableNames);
+        return array_combine($listOfFieldsToSave, $values);
     }
 }

@@ -31,9 +31,11 @@ Route::get('/privatePassword', function () {
 
 Route::get('/test', function () {
 
+    $nameToSave = 'example';
+    $privatePassword = 'secret';
 
     $data = [
-        '$nameToSave', '$privatePassword'
+        '$nameToSave' => $nameToSave, '$privatePassword' => $privatePassword
     ];
 
     $filesTdg = new \App\Services\FilesTDG();
