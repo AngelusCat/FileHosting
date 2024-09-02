@@ -2,12 +2,12 @@
 
 namespace App\Enums;
 
-enum SecurityStatus
+enum SecurityStatus: string
 {
-    case safe;
-    case doubtful;
-    case malicious;
-    case unknown;
+    case safe = "безопасный";
+    case doubtful = "подозрительный";
+    case malicious = "вредоносный";
+    case unknown = "не проверен";
 
     public static function getSecurityStatusByStringStatus(string $stringStatus): self
     {

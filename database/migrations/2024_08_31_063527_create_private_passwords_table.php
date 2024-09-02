@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('files', function (Blueprint $table) {
+        Schema::create('private_passwords', function (Blueprint $table) {
             $table->id();
-            $table->enum('disk', ['public', 'local']);
-            $table->string('name_to_save');
-            $table->string('original_name')->nullable();
-            $table->enum('security_status', ['safe', 'doubtful', 'malicious']);
+            $table->string('password');
         });
     }
 
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('files');
+        Schema::dropIfExists('private_passwords');
     }
 };

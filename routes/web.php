@@ -23,3 +23,8 @@ Route::get('/testApi', function () {
         'file', $contents, $fileName
     )->post("http://file/api/files");
 });
+
+Route::get('show/{file_id}', [FileHosting::class, 'show'])->middleware(\App\Http\Middleware\UserCanViewTheFile::class);
+Route::get('/privatePassword', function () {
+    return view('passwordForPrivateFile');
+});

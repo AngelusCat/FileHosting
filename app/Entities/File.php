@@ -4,26 +4,41 @@ namespace App\Entities;
 
 use App\Enums\Disk;
 use App\Enums\SecurityStatus;
+use App\Enums\ViewingStatus;
 use App\Interfaces\Antivirus;
 use App\Services\FilesTDG;
 use App\Services\VirusTotal;
+use Carbon\Carbon;
 
 abstract class File
 {
     protected ?int $id;
     protected Disk $disk;
     protected string $nameToSave;
+    protected SecurityStatus $securityStatus;
+    protected string $originalName;
+    protected int $size;
+    protected Carbon $uploadDate;
+    protected string $description;
+    protected ViewingStatus $viewingStatus;
+    protected string $privatePassword;
     protected FilesTDG $filesTDG;
     protected Antivirus  $antivirus;
-    protected SecurityStatus $securityStatus;
 
-    public function __construct(Disk $disk, string $nameToSave, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null) {
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, int $size, Carbon $uploadDate, string $description, ViewingStatus $viewingStatus, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null, string $privatePassword = "")
+    {
         $this->id = $id;
         $this->disk = $disk;
         $this->nameToSave = $nameToSave;
+        $this->originalName = $originalName;
+        $this->size = $size;
+        $this->uploadDate = $uploadDate;
+        $this->description = $description;
+        $this->viewingStatus = $viewingStatus;
+        $this->securityStatus = $securityStatus;
+        $this->privatePassword = $privatePassword;
         $this->filesTDG = new FilesTDG();
         $this->antivirus = new VirusTotal();
-        $this->securityStatus = $securityStatus;
     }
 
     public function getId(): ?int
@@ -35,8 +50,32 @@ abstract class File
         }
     }
 
+    public function getOriginalName(): string
+    {
+        return $this->originalName;
+    }
+
+    public function getSize(): int
+    {
+        return $this->size;
+    }
+
+    public function getUploadDate(): Carbon
+    {
+        return $this->uploadDate;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getSecurityStatus(): SecurityStatus
+    {
+        return $this->securityStatus;
+    }
+
     abstract public function getDownloadPath(): string;
     abstract public function save(string $content): void;
-
     abstract public function deleteAfterDownloading(): bool;
 }

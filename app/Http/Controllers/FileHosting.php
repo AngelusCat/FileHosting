@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Factories\SimpleFactoryFile;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Psy\Util\Json;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
 {
     public function __construct(private SimpleFactoryFile $simpleFactoryFile){}
 
-    public function upload(Request $request)
+    public function upload(Request $request): JsonResponse|RedirectResponse
     {
-        $fileFromForm = $request->file;
-        $file = $this->simpleFactoryFile->createByUploadFile($fileFromForm);
-        $content = $fileFromForm->getContent();
+        $file = $this->simpleFactoryFile->createByRequestFormData($request);
+        $content = $request->file->getContent();
         $file->save($content);
         $fileId = $file->getId();
 
@@ -27,6 +30,8 @@ class FileHosting extends Controller
                     ]
                 ]
             ]);
+        } else {
+            return redirect("/show/$fileId");
         }
     }
 
@@ -41,5 +46,12 @@ class FileHosting extends Controller
 
         return ($file->deleteAfterDownloading()) ? response()->download($path, null, $headers)->deleteFileAfterSend(true)
             : response()->download($path, null, $headers);
+    }
+
+    public function show(int $fileId): View
+    {
+        $file = $this->simpleFactoryFile->createByDB($fileId);
+        $downloadLink = "/downloadFile/$fileId";
+        return view('show', compact('file', 'downloadLink'));
     }
 }

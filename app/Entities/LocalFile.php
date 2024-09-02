@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 class LocalFile extends File
 {
-    private string $originalName;
-
-    public function __construct(Disk $disk, string $nameToSave, string $originalName, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null)
-    {
-        parent::__construct($disk, $nameToSave, $securityStatus, $id);
-        $this->originalName = $originalName;
-    }
     private function getFolders(string $fileName): string
     {
         return mb_substr($fileName, 0, 2) . '/' . mb_substr($fileName, 2, 2) . '/';
@@ -40,7 +33,7 @@ class LocalFile extends File
     {
         Storage::disk($this->disk->name)->put($this->getFolders($this->nameToSave) . $this->nameToSave, $content);
         $this->securityStatus = $this->antivirus->getSecurityStatus($this->nameToSave, $content);
-        $this->id = $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName);
+        $this->id = $this->filesTDG->save($this->disk, $this->nameToSave, $this->securityStatus, $this->originalName, $this->size, $this->uploadDate, $this->description, $this->viewingStatus);
     }
 
     public function deleteAfterDownloading(): bool
