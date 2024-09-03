@@ -13,18 +13,7 @@ class FilesTDG
 
     public function save(array $data): int
     {
-        /*return DB::table($this->tableName)->insertGetId([
-            'disk' => $disk->name,
-            'name_to_save' => $nameToSave,
-            'original_name' => $originalName,
-            'security_status' => $securityStatus->name,
-            'size' => $size,
-            'upload_date' => $uploadDate,
-            'description' => $description,
-            'viewing_status' => $viewingStatus->name
-        ]);*/
-
-        return DB::table($this->tableName)->insertGetId($data);
+        return DB::table($this->tableName)->insertGetId($this->getListOfFieldsToSaveByVariableNames($data));
     }
 
     public function findById(int $id)
@@ -37,11 +26,10 @@ class FilesTDG
         return DB::table($this->tableName)->where('id', $id)->value('viewing_status');
     }
 
-    public function getListOfFieldsToSaveByVariableNames(array $variableNames): array
+    private function getListOfFieldsToSaveByVariableNames(array $variableNames): array
     {
         foreach ($variableNames as $variableName => $variableValue) {
-            $variableNameInString = substr($variableName, 1);
-            $symbols = preg_split('//', $variableNameInString, -1, PREG_SPLIT_NO_EMPTY);
+            $symbols = preg_split('//', $variableName, -1, PREG_SPLIT_NO_EMPTY);
             for ($i = 0; $i < count($symbols); $i++) {
                 if (ctype_upper($symbols[$i]) && $i !== 0) {
                     $newSymbols[] = '_';
@@ -50,10 +38,9 @@ class FilesTDG
                     $newSymbols[] = $symbols[$i];
                 }
             }
-            $listOfFieldsToSave[] = implode('', $newSymbols);
+            $listOfFieldsToSave[implode('', $newSymbols)] = $variableValue;
             $newSymbols = [];
         }
-        $values = array_values($variableNames);
-        return array_combine($listOfFieldsToSave, $values);
+        return $listOfFieldsToSave;
     }
 }
