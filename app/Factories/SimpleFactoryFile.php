@@ -8,6 +8,7 @@ use App\Entities\LocalFile;
 use App\Entities\PublicFile;
 use App\Enums\SecurityStatus;
 use App\Enums\ViewingStatus;
+use App\Exceptions\UploadedFileIsNotValid;
 use App\Services\FilesTDG;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,17 +16,28 @@ use Illuminate\Http\Request;
 class SimpleFactoryFile
 {
     public function __construct(private FilesTDG $filesTDG){}
+
+    /**
+     * @throws UploadedFileIsNotValid
+     */
     public function createByRequestFormData(Request $request): File
     {
         $fileFromForm = $request->file;
+
+        if (!$fileFromForm->isValid()) {
+            throw new UploadedFileIsNotValid("Размер загруженного файла больше, чем значение ini-директивы upload_max_filesize");
+        }
+
+        $size = $fileFromForm->getSize();
         $mimeType = [];
         preg_match('/image/', $fileFromForm->getMimeType(), $mimeType);
         $mimeType = $mimeType[0] ?? '';
 
+
         $disk = ($mimeType === 'image') ? Disk::public : Disk::local;
         $originalName = preg_replace('/ /', '_', $fileFromForm->getClientOriginalName());
         $nameToSave = ($disk->name === 'public') ? $originalName : preg_split('/\.[A-Za-z0-9]{1,4}/', $fileFromForm->hashName(), -1, PREG_SPLIT_NO_EMPTY)[0];
-        $size = $fileFromForm->getSize();
+
         $uploadDate = now();
         $description = $request->description;
         $viewingStatus = ViewingStatus::getViewingStatusByStringStatus($request->viewingStatus);
