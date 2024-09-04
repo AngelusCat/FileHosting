@@ -75,6 +75,19 @@ abstract class File
         return $this->securityStatus;
     }
 
+    protected function getListOfPropertiesThatNeedToBeSavedInDatabase(): array
+    {
+        $disk = $this->disk->name;
+        $nameToSave = $this->nameToSave;
+        $originalName = $this->originalName;
+        $size = $this->size;
+        $uploadDate = $this->uploadDate;
+        $description = $this->description;
+        $viewingStatus = $this->viewingStatus->name;
+        $securityStatus = $this->securityStatus->name;
+        return compact('disk', 'nameToSave', 'originalName', 'size', 'uploadDate', 'description', 'viewingStatus', 'securityStatus');
+    }
+
     abstract public function getDownloadPath(): string;
     abstract public function save(string $content): void;
     abstract public function deleteAfterDownloading(): bool;
