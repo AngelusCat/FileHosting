@@ -21,11 +21,11 @@ abstract class File
     protected Carbon $uploadDate;
     protected string $description;
     protected ViewingStatus $viewingStatus;
-    protected string $privatePassword;
+
     protected FilesTDG $filesTDG;
     protected Antivirus  $antivirus;
 
-    public function __construct(Disk $disk, string $nameToSave, string $originalName, int $size, Carbon $uploadDate, string $description, ViewingStatus $viewingStatus, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null, string $privatePassword = "")
+    public function __construct(Disk $disk, string $nameToSave, string $originalName, int $size, Carbon $uploadDate, string $description, ViewingStatus $viewingStatus, SecurityStatus $securityStatus = SecurityStatus::unknown, int $id = null)
     {
         $this->id = $id;
         $this->disk = $disk;
@@ -36,7 +36,7 @@ abstract class File
         $this->description = $description;
         $this->viewingStatus = $viewingStatus;
         $this->securityStatus = $securityStatus;
-        $this->privatePassword = $privatePassword;
+
         $this->filesTDG = new FilesTDG();
         $this->antivirus = new VirusTotal();
     }
