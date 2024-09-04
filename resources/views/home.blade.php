@@ -35,9 +35,11 @@
 
         publicRadio.addEventListener('click', function () {
             div.setAttribute('style', 'display: none');
+            passwordInput.removeAttribute('required');
         });
         privateRadio.addEventListener('click', function () {
             div.setAttribute('style', 'display: run-in');
+            passwordInput.setAttribute('required', 'true');
         });
         generatePassword.addEventListener('click', function () {
             fetch('/generatePassword').then(response => response.json()).then(password => passwordInput.setAttribute('value', password.password));
