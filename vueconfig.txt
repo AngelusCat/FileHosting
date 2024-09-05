@@ -1,6 +1,18 @@
+//package.json
+    "devDependencies": {
+        "laravel-vite-plugin": "^1.0.1",
+        "vite": "^5.0.11"
+    },
+
+npm install vue vue-loader
+npm install --save-dev @vitejs/plugin-vue
+
+//vite.config.js
+
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -25,3 +37,25 @@ export default defineConfig({
         },
     },
 });
+
+Создание vue-приложения:
+
+//app.js
+import createApp from 'vue'
+import example from '...'
+
+const app = createApp({
+    components: {
+        example
+    }
+}).mount('#app)';
+
+//любой шаблон blade
+
+@vite(['resources/js/app.js'])
+
+<div id="app">
+    <example></example>
+</div>
+
+"<example></example>" вставит код, который находится в секции <template> SFC-файла example
