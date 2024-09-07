@@ -25,6 +25,8 @@ class UserCanViewTheFile
         if ($viewingStatus->name === 'private') {
             if (empty($request->cookie('jwt'))) {
                 return redirect($file->getId() . "/privatePassword");
+            } else {
+                //проверить jwt
             }
         }
 

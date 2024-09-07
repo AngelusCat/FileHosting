@@ -66,7 +66,8 @@ class FileHosting extends Controller
         $passwordTDG = new PasswordTDG("viewing_passwords");
         $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $passwordTDG);
         if ($password->isPasswordCorrect($request->password)) {
-            redirect("/show/$fileId");
+            //сгенерировать jwt
+            return redirect("/show/$fileId")->cookie("jwt", "example", 60);
         } else {
             die('bad pass');
         }
