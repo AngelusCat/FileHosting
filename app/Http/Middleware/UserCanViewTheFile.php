@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\ViewingStatus;
+use App\Factories\SimpleFactoryFile;
 use App\Services\FilesTDG;
 use Closure;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserCanViewTheFile
 {
-    public function __construct(private FilesTDG $filesTDG){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile){}
     /**
      * Handle an incoming request.
      *
@@ -18,11 +19,12 @@ class UserCanViewTheFile
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $viewingStatus = ViewingStatus::getViewingStatusByStringStatus($this->filesTDG->getViewingStatus($request->file_id));
+        $file = $this->simpleFactoryFile->createByDB($request->file_id);
+        $viewingStatus = $file->getViewingStatus();
 
         if ($viewingStatus->name === 'private') {
             if (empty($request->cookie('jwt'))) {
-                return redirect('privatePassword');
+                return redirect($file->getId() . "/privatePassword");
             }
         }
 

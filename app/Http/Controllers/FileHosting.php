@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Password;
 use App\Factories\SimpleFactoryFile;
+use App\Services\PasswordTDG;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Psy\Util\Json;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
@@ -20,6 +21,10 @@ class FileHosting extends Controller
         $content = $request->file->getContent();
         $file->save($content);
         $fileId = $file->getId();
+        if ($file->getViewingStatus()->name === "private") {
+            $password = new Password($request->visibilityPassword, $file, new PasswordTDG("viewing_passwords"));
+            $password->install();
+        }
 
         if ($request->url() === route("api.files.post")) {
             return response()->json([
@@ -53,5 +58,17 @@ class FileHosting extends Controller
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $downloadLink = "/downloadFile/$fileId";
         return view('show', compact('file', 'downloadLink'));
+    }
+
+    public function checkPassword(Request $request, int $fileId)
+    {
+        $file = $this->simpleFactoryFile->createByDB($fileId);
+        $passwordTDG = new PasswordTDG("viewing_passwords");
+        $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $passwordTDG);
+        if ($password->isPasswordCorrect($request->password)) {
+            redirect("/show/$fileId");
+        } else {
+            die('bad pass');
+        }
     }
 }

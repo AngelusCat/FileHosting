@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('visibility_passwords', function (Blueprint $table) {
+        Schema::create('viewing_passwords', function (Blueprint $table) {
             $table->id();
-            $table->string('password');
-            $table->foreignId('file_id')->references('id')->on('files')->onDelete('cascade');
+            $table->string("password");
+            $table->foreignId("file_id")->references("id")->on("files")->onDelete("cascade");
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('visibility_passwords');
+        Schema::dropIfExists('viewing_passwords');
     }
 };

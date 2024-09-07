@@ -4,11 +4,16 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 
-class VisibilityPasswordsTDG
+class PasswordTDG
 {
-    private string $tableName = "visibility_passwords";
+    private string $tableName;
 
-    public function save(string $password, int $fileId): void
+    public function __construct(string $tableName)
+    {
+        $this->tableName = $tableName;
+    }
+
+    public function save(int $fileId, string $password): void
     {
         DB::table($this->tableName)->insert([
             "password" => $password,
@@ -16,7 +21,7 @@ class VisibilityPasswordsTDG
         ]);
     }
 
-    public function getPasswordsByFileId(int $fileId): string
+    public function getPasswordByFileId(int $fileId): string
     {
         return DB::table($this->tableName)->where("file_id", $fileId)->value("password");
     }

@@ -75,6 +75,11 @@ abstract class File
         return $this->securityStatus;
     }
 
+    public function getViewingStatus(): ViewingStatus
+    {
+        return $this->viewingStatus;
+    }
+
     protected function getListOfPropertiesThatNeedToBeSavedInDatabase(): array
     {
         $disk = $this->disk->name;

@@ -8,8 +8,9 @@
 </head>
 <body>
     <h1>Введите пароль, чтобы просматривать приватный файл:</h1>
-    <form>
-        <input type="password" name="privatePassword">
+    <form action="/{{ $fileId }}/checkPassword" method="post">
+        @csrf
+        <input type="password" name="password" required>
         <input type="submit" value="Отправить">
     </form>
 </body>
