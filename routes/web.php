@@ -1,5 +1,6 @@
 <?php
 
+use App\Entities\JWT;
 use App\Http\Controllers\FileHosting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -32,3 +33,9 @@ Route::get('/{file_id}/privatePassword', function (\Illuminate\Http\Request $req
 });
 
 Route::post('/{file_id}/checkPassword', [FileHosting::class, 'checkPassword']);
+
+Route::get('/jwt', function () {
+    $payload = '{"file_id": "1"}';
+    $jwt = new JWT();
+    dump($jwt->create($payload));
+});
