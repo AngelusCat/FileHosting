@@ -4,19 +4,31 @@ namespace App\Entities;
 
 class JWT
 {
-    private string $header = '{"typ":"JWT", "alg":"HS256"}';
-    private string $secret;
+    private string $headerBase64;
+    private string $payloadBase64;
+    private string $signature;
+    private string $all;
 
-    public function __construct()
+    public function __construct(string $headerBase64, string $payloadBase64, string $signature, string $all)
     {
-        $this->secret = env('JWT_SECRET');
+        $this->headerBase64 = $headerBase64;
+        $this->payloadBase64 = $payloadBase64;
+        $this->signature = $signature;
+        $this->all = $all;
     }
 
-    public function create(string $payload): string
+    public function getSignature(): string
     {
-        $header = base64_encode($this->header);
-        $payload = base64_encode($payload);
-        $signature = hash_hmac("sha256", $header . "." . $payload, $this->secret);
-        return $header . "." . $payload . "." . $signature;
+        return $this->signature;
+    }
+
+    public function getHeaderBase64(): string
+    {
+        return $this->headerBase64;
+    }
+
+    public function getPayloadBase64(): string
+    {
+        return $this->payloadBase64;
     }
 }
