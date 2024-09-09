@@ -1,8 +1,33 @@
 <?php
 
 use App\Http\Controllers\FileHosting;
-use Illuminate\Support\Facades\Http;
+use App\Http\Middleware\UserCanViewTheFile;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/files/create', function () {
+    return view('home');
+});
+
+Route::post('/files', [FileHosting::class, 'upload']);
+
+Route::get('/files/{file}', [FileHosting::class, 'show'])->middleware(UserCanViewTheFile::class);
+
+Route::get('/files/{file}/content', [FileHosting::class, 'download']);
+
+Route::get('/generatePassword', function () {
+    return response()->json(['password' => bin2hex(random_bytes(5))]);
+});
+
+Route::get('/viewingPassword/', function (\Illuminate\Http\Request $request) {
+    $fileId = $request->file_id;
+    return view('passwordForPrivateFile', compact('fileId'));
+});
+
+Route::post('/{file_id}/checkPassword', [FileHosting::class, 'checkPassword']);
+
+
+
+
 
 Route::get('/', function () {
     return view('home');
@@ -24,7 +49,7 @@ Route::get('/generatePassword', function () {
     )->post("http://file/api/files");
 });*/
 
-Route::get('show/{file_id}', [FileHosting::class, 'show'])->middleware(\App\Http\Middleware\UserCanViewTheFile::class);
+Route::get('show/{file_id}', [FileHosting::class, 'show'])->middleware(UserCanViewTheFile::class);
 
 Route::get('/{file_id}/privatePassword', function (\Illuminate\Http\Request $request) {
     $fileId = $request->file_id;
