@@ -31,4 +31,9 @@ class JWT
     {
         return $this->payloadBase64;
     }
+
+    public function getAll(): string
+    {
+        return $this->all;
+    }
 }

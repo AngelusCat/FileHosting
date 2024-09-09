@@ -8,7 +8,6 @@ class JWTAuth
 {
     private string $header;
     private string $alg;
-
     private string $secret;
 
     public function __construct()
@@ -26,13 +25,9 @@ class JWTAuth
         $headerBase64 = base64_encode($this->header);
         $payloadBase64 = base64_encode($payload);
         $headerBase64WithPayloadBase64 = $headerBase64 . "." . $payloadBase64;
-        if ($this->alg === "HS256") {
-            $signature = hash_hmac('sha256', $headerBase64WithPayloadBase64, $this->secret);
-            $all = $headerBase64WithPayloadBase64 . "." . $signature;
-            return new JWT($headerBase64, $payloadBase64, $signature, $all);
-        } else {
-            die;
-        }
+        $signature = $this->createSignature($headerBase64WithPayloadBase64);
+        $all = $headerBase64WithPayloadBase64 . "." . $signature;
+        return new JWT($headerBase64, $payloadBase64, $signature, $all);
     }
 
     public function getJwtFromStringRepresentation(string $JwtInStringRepresentation): JWT
@@ -41,7 +36,7 @@ class JWTAuth
         return new JWT($header, $payload, $signature, $JwtInStringRepresentation);
     }
 
-    public function createSignature(string $headerBase64WithPayloadBase64): string
+    private function createSignature(string $headerBase64WithPayloadBase64): string
     {
         if ($this->alg === "HS256") {
             return hash_hmac('sha256', $headerBase64WithPayloadBase64, $this->secret);
@@ -56,10 +51,6 @@ class JWTAuth
         $payloadBase64 = $jwt->getPayloadBase64();
         $headerBase64WithPayloadBase64 = $headerBase64 . "." . $payloadBase64;
         $signature = $this->createSignature($headerBase64WithPayloadBase64);
-        if ($signature === $jwt->getSignature()) {
-            return true;
-        } else {
-            return false;
-        }
+        return ($signature === $jwt->getSignature());
     }
 }
