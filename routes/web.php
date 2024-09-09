@@ -34,16 +34,3 @@ Route::get('/{file_id}/privatePassword', function (\Illuminate\Http\Request $req
 });
 
 Route::post('/{file_id}/checkPassword', [FileHosting::class, 'checkPassword']);
-
-Route::get('/jwt', function () {
-    $jwtauth = new JWTAuth();
-    $payload = [
-        "file_id" => "1"
-    ];
-    $payload = json_encode($payload);
-    $jwt = $jwtauth->createJWT($payload);
-    dump($jwt);
-   $jwt2 = $jwtauth->getJwtFromStringRepresentation("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWxlX2lkIjoiMSJ9.5ca194f2989e8b88c27df1f2fb9b5b2d77e6f9acefcbb7ec9591737ee72df91f");
-   dump($jwt2);
-   dump($jwtauth->validateJWT($jwt2));
-});
