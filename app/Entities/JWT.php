@@ -36,4 +36,9 @@ class JWT
     {
         return $this->all;
     }
+
+    public function getDecoratedPayload(): array
+    {
+        return json_decode(base64_decode($this->payloadBase64), true);
+    }
 }

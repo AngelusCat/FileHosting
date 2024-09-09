@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entities\Password;
 use App\Factories\SimpleFactoryFile;
+use App\Services\JWTAuth;
 use App\Services\PasswordTDG;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private JWTAuth $jwtAuth){}
 
     public function upload(Request $request): JsonResponse|RedirectResponse
     {
@@ -66,8 +67,11 @@ class FileHosting extends Controller
         $passwordTDG = new PasswordTDG("viewing_passwords");
         $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $passwordTDG);
         if ($password->isPasswordCorrect($request->password)) {
-            //сгенерировать jwt
-            return redirect("/show/$fileId")->cookie("jwt", "example", 60);
+            $payload = json_encode([
+                "file_id" => $file->getId(),
+            ]);
+            $jwt = $this->jwtAuth->createJWT($payload);
+            return redirect("/show/$fileId")->cookie("jwt", $jwt->getAll(), 1);
         } else {
             die('bad pass');
         }
