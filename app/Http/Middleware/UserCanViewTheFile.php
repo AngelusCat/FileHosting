@@ -20,17 +20,18 @@ class UserCanViewTheFile
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $file = $this->simpleFactoryFile->createByDB($request->file_id);
+        $file = $this->simpleFactoryFile->createByDB($request->file);
         $viewingStatus = $file->getViewingStatus();
 
         if ($viewingStatus->name === 'private') {
             if (empty($request->cookie('jwt'))) {
-                return redirect($file->getId() . "/privatePassword");
+                //return redirect($file->getId() . "/privatePassword");
+                return redirect(route("viewingPassword", ["file" => $file->getId()], false));
             } else {
                 $jwt = $this->jwtAuth->getJwtFromStringRepresentation($request->cookie('jwt'));
                 $fileIdFromJWT = $jwt->getDecoratedPayload()["file_id"];
                 if ($this->jwtAuth->validateJWT($jwt) === false || $fileIdFromJWT !== $file->getId()) {
-                    return redirect($file->getId() . "/privatePassword");
+                    return redirect(route("viewingPassword", ["file" => $file->getId()], false));
                 }
             }
         }
