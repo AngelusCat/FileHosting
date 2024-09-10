@@ -10,7 +10,7 @@
 </head>
 <body>
     <div id="app">
-        <form action="/uploadFile" method="post" enctype="multipart/form-data" id="form">
+        <form action="{{ route("files.upload") }}" method="post" enctype="multipart/form-data" id="form">
             @csrf
             <form-vue></form-vue>
         </form>

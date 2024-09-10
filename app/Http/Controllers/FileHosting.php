@@ -37,7 +37,7 @@ class FileHosting extends Controller
                 ]
             ]);
         } else {
-            return redirect("/show/$fileId");
+            return redirect(route("files.show", ["file" => $fileId]));
         }
     }
 
@@ -57,7 +57,7 @@ class FileHosting extends Controller
     public function show(int $fileId): View
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
-        $downloadLink = "/downloadFile/$fileId";
+        $downloadLink = route("files.download", ["file" => $fileId]);
         return view('show', compact('file', 'downloadLink'));
     }
 
@@ -71,7 +71,7 @@ class FileHosting extends Controller
                 "file_id" => $file->getId(),
             ]);
             $jwt = $this->jwtAuth->createJWT($payload);
-            return redirect("/show/$fileId")->cookie("jwt", $jwt->getAll(), 1);
+            return redirect(route("files.show", ["file" => $file->getId()]))->cookie("jwt", $jwt->getAll(), 1);
         } else {
             die('bad pass');
         }
