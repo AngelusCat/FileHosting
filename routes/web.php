@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileHosting;
 use App\Http\Middleware\UserCanViewTheFile;
+use App\Services\JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

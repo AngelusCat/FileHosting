@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Entities\JWT;
+use App\Exceptions\InvalidPayload;
 
 class JWTAuth
 {
@@ -20,8 +21,14 @@ class JWTAuth
         $this->secret = env('JWT_SECRET');
     }
 
+    /**
+     * @throws InvalidPayload
+     */
     public function createJWT(string $payload): JWT
     {
+        if (str_contains($payload, "file_id") === false) {
+            throw new InvalidPayload("Payload must contain the file_id field");
+        }
         $headerBase64 = base64_encode($this->header);
         $payloadBase64 = base64_encode($payload);
         $headerBase64WithPayloadBase64 = $headerBase64 . "." . $payloadBase64;
