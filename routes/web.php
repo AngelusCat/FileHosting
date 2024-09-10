@@ -35,3 +35,13 @@ Route::post('/{file}/viewingPassword', [FileHosting::class, 'checkPassword'])->n
         'file', $contents, $fileName
     )->post("http://file/api/files");
 });*/
+
+Route::get('/test', function () {
+    $fileId = 20;
+    $name = "example";
+    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
+    $file = $factory->createByDB($fileId);
+    $originalName = $file->getOriginalName();
+    $downloadLink = route("files.download", ["file" => $fileId]);
+    return view('test', compact('originalName', 'downloadLink', 'name'));
+});
