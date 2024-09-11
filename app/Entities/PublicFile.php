@@ -22,4 +22,9 @@ class PublicFile extends File
     {
         return false;
     }
+
+    public function changeMetadata()
+    {
+
+    }
 }

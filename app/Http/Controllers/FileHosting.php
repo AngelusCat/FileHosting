@@ -79,7 +79,8 @@ class FileHosting extends Controller
 
     public function changeMetadata(Request $request, int $fileId)
     {
-        dump($request);
         //Если пользователь ввел к названию расширение, то убрать его
+        $file = $this->simpleFactoryFile->createByDB($fileId);
+        dump($file);
     }
 }
