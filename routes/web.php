@@ -51,3 +51,9 @@ Route::get('/test', function () {
     $csrfToken = csrf_token();
     return view('test', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
 });
+
+Route::get('/test1', function () {
+    $name = "Александра.php";
+    dump(preg_match_all("/\.[a-zA-Z]{1,}$/", $name, $result));
+    dump($result);
+});
