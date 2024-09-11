@@ -27,6 +27,8 @@ Route::get('/{file}/viewingPassword', function (Request $request) {
 
 Route::post('/{file}/viewingPassword', [FileHosting::class, 'checkPassword'])->name("viewingPassword.checkPassword");
 
+Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("files.changeMetadata");
+
 /*Route::get('/testApi', function () {
     $fileName = "welcome.blade.php";
     $contents = file_get_contents("C:/localhost/file/resources/views/welcome.blade.php");
@@ -38,10 +40,14 @@ Route::post('/{file}/viewingPassword', [FileHosting::class, 'checkPassword'])->n
 
 Route::get('/test', function () {
     $fileId = 20;
-    $name = "example";
     $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
     $file = $factory->createByDB($fileId);
-    $originalName = $file->getOriginalName();
+    $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
+    $size = $file->getSize();
+    $uploadDate = $file->getUploadDate();
+    $description = $file->getDescription();
+    $securityStatus = $file->getSecurityStatus()->value;
     $downloadLink = route("files.download", ["file" => $fileId]);
-    return view('test', compact('originalName', 'downloadLink', 'name'));
+    $csrfToken = csrf_token();
+    return view('test', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
 });

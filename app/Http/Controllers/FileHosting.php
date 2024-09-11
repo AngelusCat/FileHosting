@@ -76,4 +76,10 @@ class FileHosting extends Controller
             die('bad pass');
         }
     }
+
+    public function changeMetadata(Request $request, int $fileId)
+    {
+        dump($request);
+        //Если пользователь ввел к названию расширение, то убрать его
+    }
 }
