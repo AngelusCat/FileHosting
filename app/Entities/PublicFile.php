@@ -23,8 +23,9 @@ class PublicFile extends File
         return false;
     }
 
-    public function changeMetadata()
+    protected function getListOfPropertiesThatNeedToBeUpdatedInDatabaseInDatabase(): array
     {
-
+        $nameToSave = $this->nameToSave;
+        return parent::getListOfPropertiesThatNeedToBeUpdatedInDatabase() + compact('nameToSave');
     }
 }

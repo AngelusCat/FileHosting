@@ -79,8 +79,13 @@ class FileHosting extends Controller
 
     public function changeMetadata(Request $request, int $fileId)
     {
-        //Если пользователь ввел к названию расширение, то убрать его
+        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
+        $nameToSave = $originalName;
+        $description = $request->description;
         $file = $this->simpleFactoryFile->createByDB($fileId);
+        dump($file);
+        $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
+        $file->changeMetadata($metadata);
         dump($file);
     }
 }

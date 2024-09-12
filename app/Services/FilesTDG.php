@@ -13,7 +13,7 @@ class FilesTDG
 
     public function save(array $data): int
     {
-        return DB::table($this->tableName)->insertGetId($this->getListOfFieldsToSaveByVariableNames($data));
+        return DB::table($this->tableName)->insertGetId($this->getListOfFieldsByVariableNames($data));
     }
 
     public function findById(int $id)
@@ -26,7 +26,12 @@ class FilesTDG
         return DB::table($this->tableName)->where('id', $id)->value('viewing_status');
     }
 
-    private function getListOfFieldsToSaveByVariableNames(array $variableNames): array
+    public function update(int $id, array $data): void
+    {
+        DB::table($this->tableName)->where('id', $id)->update($this->getListOfFieldsByVariableNames($data));
+    }
+
+    private function getListOfFieldsByVariableNames(array $variableNames): array
     {
         foreach ($variableNames as $variableName => $variableValue) {
             $symbols = preg_split('//', $variableName, -1, PREG_SPLIT_NO_EMPTY);

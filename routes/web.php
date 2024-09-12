@@ -39,7 +39,7 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
 });*/
 
 Route::get('/test', function () {
-    $fileId = 20;
+    $fileId = 8;
     $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
     $file = $factory->createByDB($fileId);
     $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];

@@ -9,6 +9,7 @@ use App\Interfaces\Antivirus;
 use App\Services\FilesTDG;
 use App\Services\VirusTotal;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 abstract class File
 {
@@ -80,6 +81,11 @@ abstract class File
         return $this->viewingStatus;
     }
 
+    public function getDisk(): Disk
+    {
+        return $this->disk;
+    }
+
     protected function getListOfPropertiesThatNeedToBeSavedInDatabase(): array
     {
         $disk = $this->disk->name;
@@ -91,6 +97,28 @@ abstract class File
         $viewingStatus = $this->viewingStatus->name;
         $securityStatus = $this->securityStatus->name;
         return compact('disk', 'nameToSave', 'originalName', 'size', 'uploadDate', 'description', 'viewingStatus', 'securityStatus');
+    }
+
+    protected function getListOfPropertiesThatNeedToBeUpdatedInDatabase(): array
+    {
+        $originalName = $this->originalName;
+        $description = $this->description;
+        return compact('originalName', 'description');
+    }
+
+    public function changeMetadata(array $metadata): void
+    {
+        foreach ($metadata as $key => $value) {
+            if ($key === "originalName" || $key === "nameToSave" && $this->disk->name === "public") {
+                $extension = [];
+                preg_match_all("/\.[a-zA-Z]{1,}$/", $this->originalName, $extension);
+                $extension = Arr::collapse($extension)[0];
+                $this->$key = $value . $extension;
+                continue;
+            }
+            $this->$key = $value;
+        }
+        $this->filesTDG->update($this->id, $this->getListOfPropertiesThatNeedToBeUpdatedInDatabase());
     }
 
     abstract public function getDownloadPath(): string;
