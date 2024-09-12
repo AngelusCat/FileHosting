@@ -1,7 +1,7 @@
 import './bootstrap';
 import {createApp} from "vue";
 import formVue from "../vue-components/form.vue"
-import Test from "../vue-components/test.vue"
+import fileOrForm from "../vue-components/fileOrForm.vue"
 
 createApp({
     components: {
@@ -11,6 +11,6 @@ createApp({
 
 createApp({
     components: {
-        Test
+        fileOrForm
     }
-}).mount('#test');
+}).mount('#app1');

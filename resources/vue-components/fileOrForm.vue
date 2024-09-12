@@ -11,7 +11,6 @@
     {
         isFileBeingEdited.value = (isFileBeingEdited.value === false);
     }
-
 </script>
 
 <template>

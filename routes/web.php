@@ -37,17 +37,3 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
         'file', $contents, $fileName
     )->post("http://file/api/files");
 });*/
-
-Route::get('/test', function () {
-    $fileId = 8;
-    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
-    $file = $factory->createByDB($fileId);
-    $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
-    $size = $file->getSize();
-    $uploadDate = $file->getUploadDate();
-    $description = $file->getDescription();
-    $securityStatus = $file->getSecurityStatus()->value;
-    $downloadLink = route("files.download", ["file" => $fileId]);
-    $csrfToken = csrf_token();
-    return view('test', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
-});

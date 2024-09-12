@@ -57,8 +57,14 @@ class FileHosting extends Controller
     public function show(int $fileId): View
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
+        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
+        $size = $file->getSize();
+        $uploadDate = $file->getUploadDate();
+        $description = $file->getDescription();
+        $securityStatus = $file->getSecurityStatus()->value;
         $downloadLink = route("files.download", ["file" => $fileId]);
-        return view('show', compact('file', 'downloadLink'));
+        $csrfToken = csrf_token();
+        return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
     public function checkPassword(Request $request, int $fileId)
@@ -83,9 +89,7 @@ class FileHosting extends Controller
         $nameToSave = $originalName;
         $description = $request->description;
         $file = $this->simpleFactoryFile->createByDB($fileId);
-        dump($file);
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
-        dump($file);
     }
 }
