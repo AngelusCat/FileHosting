@@ -9,6 +9,7 @@ use App\Interfaces\Antivirus;
 use App\Services\FilesTDG;
 use App\Services\VirusTotal;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 abstract class File
 {
@@ -108,8 +109,12 @@ abstract class File
     public function changeMetadata(array $metadata): void
     {
         foreach ($metadata as $key => $value) {
-            if ($key === "originalName" || $key === "nameToSave") {
-                $extension = "";
+            if ($key === "originalName" || $key === "nameToSave" && $this->disk->name === "public") {
+                $extension = [];
+                preg_match_all("/\.[a-zA-Z]{1,}$/", $this->originalName, $extension);
+                $extension = Arr::collapse($extension)[0];
+                $this->$key = $value . $extension;
+                continue;
             }
             $this->$key = $value;
         }
