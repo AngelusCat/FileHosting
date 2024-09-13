@@ -38,7 +38,7 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
     )->post("http://file/api/files");
 });*/
 
-Route::get('/auth/{file}', function (Request $request, int $fileId) {
+/*Route::get('/auth/{file}', function (Request $request, int $fileId) {
     $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
     $file = $factory->createByDB($fileId);
     if ($file->getViewingStatus()->name === "public") {
@@ -56,4 +56,12 @@ Route::get('/auth/{file}', function (Request $request, int $fileId) {
             return response()->json(["success" => false]);
         }
     }
+});*/
+
+Route::get('/test/{file}', function (Request $request, int $fileId) {
+    $user = new \App\Entities\User();
+    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
+    $file = $factory->createByDB($fileId);
+    $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+    dump($user);
 });

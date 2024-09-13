@@ -20,6 +20,11 @@ class User
     private string $permissions;
     private Auth $auth;
 
+    public function __construct()
+    {
+        $this->auth = new Auth();
+    }
+
 /*
  * Для public всегда r
  * Для private всегда r, если пользователь доказал свою принадлежность к группе наличием валидного ключа, иначе -
