@@ -20,6 +20,13 @@ class User
     private string $permissions;
     private Auth $auth;
 
+/*
+ * Для public всегда r
+ * Для private всегда r, если пользователь доказал свою принадлежность к группе наличием валидного ключа, иначе -
+ * Для public всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
+ * Для private всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
+ */
+
     public function setPermissionsRelativeToCurrentFile(Request $request, ViewingStatus $viewingStatus, int $fileId): void
     {
         if ($viewingStatus->name === "public") {
@@ -28,16 +35,7 @@ class User
             $this->permissions = ($this->auth->isUserAuthenticated($request, "r", $fileId)) ? "r" : "-";
         }
 
-
-
-
-
-
-        /*
-         * Для public всегда r
-         * Для private всегда r, если пользователь доказал свою принадлежность к группе наличием валидного ключа, иначе -
-         * Для public всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
-         * Для private всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
-         */
+        $w = ($this->auth->isUserAuthenticated($request, "w", $fileId)) ? "w" : "-";
+        $this->permissions .= $w;
     }
 }
