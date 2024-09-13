@@ -37,3 +37,23 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
         'file', $contents, $fileName
     )->post("http://file/api/files");
 });*/
+
+Route::get('/auth/{file}', function (Request $request, int $fileId) {
+    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
+    $file = $factory->createByDB($fileId);
+    if ($file->getViewingStatus()->name === "public") {
+        return response()->json(["success" => true]);
+    }
+    if (empty($request->cookie("jwt"))) {
+        return response()->json(["success" => false]);
+    } else {
+        $jwtAuth = new JWTAuth();
+        $jwt = $jwtAuth->getJwtFromStringRepresentation($request->cookie("jwt"));
+        $fileIdFromPayload = $jwt->getDecoratedPayload()["file_id"];
+        if ($jwtAuth->validateJWT($jwt) === true && $fileIdFromPayload === $fileId) {
+            return response()->json(["success" => true]);
+        } else {
+            return response()->json(["success" => false]);
+        }
+    }
+});

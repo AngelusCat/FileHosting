@@ -5,11 +5,18 @@
 
     let props = defineProps(['originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId']);
 
-    let action = "http://file/files/" + props.fileId
+    let action = "http://file/files/" + props.fileId;
+
+    let auth = ref(false);
 
     function changeVisibility()
     {
+        isUserAuthenticated();
         isFileBeingEdited.value = (isFileBeingEdited.value === false);
+    }
+    function isUserAuthenticated()
+    {
+        let response = fetch("http://file/auth/" + props.fileId).then(response => response.json()).then(result => auth.value = result.success);
     }
 </script>
 
@@ -26,6 +33,7 @@
         <p>Статус проверки на virus total: {{ props.securityStatus }}</p>
         <a :href="props.downloadLink">Скачать файл</a><br><br>
         <button type="submit" form="form">Сохранить изменения</button><br><br>
+        <p>{{ auth }}</p>
         <button @click="changeVisibility">Выйти из редактирования</button>
     </div>
     <div v-else>
