@@ -38,7 +38,7 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
     )->post("http://file/api/files");
 });*/
 
-Route::get('/auth/{file}', function (Request $request, int $fileId) {
+/*Route::get('/auth/{file}', function (Request $request, int $fileId) {
     $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
     $file = $factory->createByDB($fileId);
     if ($file->getViewingStatus()->name === "public") {
@@ -56,4 +56,24 @@ Route::get('/auth/{file}', function (Request $request, int $fileId) {
             return response()->json(["success" => false]);
         }
     }
+});*/
+
+Route::get('/test/{file}', function (Request $request, int $fileId) {
+    $user = new \App\Entities\User();
+    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
+    $file = $factory->createByDB($fileId);
+    $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+    dump($user);
+});
+
+Route::get('/test4/{file}', function (Request $request, int $fileId) {
+    $group = new \App\Entities\Group();
+    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
+    $file = $factory->createByDB($fileId);
+    $password = "12345";
+    $password2 = "12345";
+    if ($file->getViewingStatus()->name === "private") {
+        $group->makeFileReadableOnlyByGroup($password, $file);
+    }
+    $group->makeFileWritableOnlyByGroup($password2, $file);
 });
