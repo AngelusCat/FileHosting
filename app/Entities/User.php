@@ -3,6 +3,8 @@
 namespace App\Entities;
 
 use App\Enums\ViewingStatus;
+use App\Services\Auth;
+use Illuminate\Http\Request;
 
 /**
  * Человек заходит на сайт -> ему устанавливаются права
@@ -16,13 +18,14 @@ use App\Enums\ViewingStatus;
 class User
 {
     private string $permissions;
+    private Auth $auth;
 
-    public function setPermissionsRelativeToCurrentFile(ViewingStatus $viewingStatus): void
+    public function setPermissionsRelativeToCurrentFile(Request $request, ViewingStatus $viewingStatus, int $fileId): void
     {
         if ($viewingStatus->name === "public") {
             $this->permissions = "r";
         } else {
-            //проверить аутентификацию
+            $this->permissions = ($this->auth->isUserAuthenticated($request, "r", $fileId)) ? "r" : "-";
         }
 
 
