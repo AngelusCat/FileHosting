@@ -34,8 +34,27 @@ class User
         } else {
             $this->permissions = ($this->auth->isUserAuthenticated($request, "r", $fileId)) ? "r" : "-";
         }
-
         $w = ($this->auth->isUserAuthenticated($request, "w", $fileId)) ? "w" : "-";
         $this->permissions .= $w;
+    }
+
+    private function getR(): string
+    {
+        return mb_substr($this->permissions, 0, 1);
+    }
+
+    private function getW(): string
+    {
+        return mb_substr($this->permissions, 1, 1);
+    }
+
+    public function canRead(): bool
+    {
+        return $this->getR() === "r";
+    }
+
+    public function canWrite(): bool
+    {
+        return $this->getR() === "w";
     }
 }
