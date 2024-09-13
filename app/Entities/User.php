@@ -2,6 +2,8 @@
 
 namespace App\Entities;
 
+use App\Enums\ViewingStatus;
+
 /**
  * Человек заходит на сайт -> ему устанавливаются права
  * Если человек аутентифицирован, то ему ставятся rw
@@ -15,8 +17,19 @@ class User
 {
     private string $permissions;
 
-    public function setPermissionsRelativeToCurrentFile()
+    public function setPermissionsRelativeToCurrentFile(ViewingStatus $viewingStatus): void
     {
+        if ($viewingStatus->name === "public") {
+            $this->permissions = "r";
+        } else {
+            //проверить аутентификацию
+        }
+
+
+
+
+
+
         /*
          * Для public всегда r
          * Для private всегда r, если пользователь доказал свою принадлежность к группе наличием валидного ключа, иначе -
