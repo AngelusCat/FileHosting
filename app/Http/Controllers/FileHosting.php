@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Group;
 use App\Entities\Password;
+use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
 use App\Services\JWTAuth;
 use App\Services\PasswordTDG;
@@ -10,22 +12,31 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Random\RandomException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private JWTAuth $jwtAuth){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private JWTAuth $jwtAuth, private Group $group){}
 
+    /**
+     * @throws RandomException
+     * @throws UploadedFileIsNotValid
+     */
     public function upload(Request $request): JsonResponse|RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByRequestFormData($request);
         $content = $request->file->getContent();
         $file->save($content);
         $fileId = $file->getId();
+
         if ($file->getViewingStatus()->name === "private") {
-            $password = new Password($request->visibilityPassword, $file, new PasswordTDG("viewing_passwords"));
-            $password->install();
+            $visibilityPassword = $request->visibilityPassword;
+            $this->group->makeFileReadableOnlyByGroup($visibilityPassword, $file);
         }
+
+        $modifyPassword = bin2hex(random_bytes(5));
+        $this->group->makeFileWritableOnlyByGroup($modifyPassword, $file);
 
         if ($request->url() === route("api.files.post")) {
             return response()->json([
