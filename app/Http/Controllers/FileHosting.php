@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entities\Group;
 use App\Entities\Password;
+use App\Entities\User;
 use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
 use App\Services\JWTAuth;
