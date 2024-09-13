@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entities\Group;
 use App\Entities\Password;
 use App\Entities\User;
+use App\Exceptions\InvalidPayload;
 use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
 use App\Services\JWTAuth;
@@ -89,6 +90,9 @@ class FileHosting extends Controller
         return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
+    /**
+     * @throws InvalidPayload
+     */
     public function checkPassword(Request $request, int $fileId)
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
