@@ -65,3 +65,15 @@ Route::get('/test/{file}', function (Request $request, int $fileId) {
     $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
     dump($user);
 });
+
+Route::get('/test4/{file}', function (Request $request, int $fileId) {
+    $group = new \App\Entities\Group();
+    $factory = new \App\Factories\SimpleFactoryFile(new \App\Services\FilesTDG());
+    $file = $factory->createByDB($fileId);
+    $password = "12345";
+    $password2 = "12345";
+    if ($file->getViewingStatus()->name === "private") {
+        $group->makeFileReadableOnlyByGroup($password, $file);
+    }
+    $group->makeFileWritableOnlyByGroup($password2, $file);
+});
