@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 
 class User
 {
-    private string $permissions;
+    private array $permissions;
     private Auth $auth;
 
     public function __construct()
@@ -32,25 +32,20 @@ class User
  * Для private всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
  */
 
-    public function setPermissionsRelativeToCurrentFile(Request $request, ViewingStatus $viewingStatus, int $fileId): void
+    public function setPermissionsRelativeToCurrentFile(Request $request, File $file): void
     {
-        if ($viewingStatus->name === "public") {
-            $this->permissions = "r";
-        } else {
-            $this->permissions = ($this->auth->isUserAuthenticated($request, "r", $fileId)) ? "r" : "-";
-        }
-        $w = ($this->auth->isUserAuthenticated($request, "w", $fileId)) ? "w" : "-";
-        $this->permissions .= $w;
+        $this->permissions["R"] = new PermissionR($request, $file);
+        $this->permissions["W"] = new PermissionW($request, $file);
     }
 
     private function getR(): string
     {
-        return mb_substr($this->permissions, 0, 1);
+        return $this->permissions["R"]->getPermission();
     }
 
     private function getW(): string
     {
-        return mb_substr($this->permissions, 1, 1);
+        return $this->permissions["W"]->getPermission();
     }
 
     public function canRead(): bool
@@ -60,6 +55,6 @@ class User
 
     public function canWrite(): bool
     {
-        return $this->getR() === "w";
+        return $this->getW() === "w";
     }
 }
