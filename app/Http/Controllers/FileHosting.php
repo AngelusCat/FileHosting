@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Entities\Group;
 use App\Entities\Password;
 use App\Entities\User;
+use App\Exceptions\InvalidPayload;
 use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
 use App\Services\JWTAuth;
@@ -53,9 +54,14 @@ class FileHosting extends Controller
         }
     }
 
-    public function download(int $fileId): BinaryFileResponse
+    public function download(Request $request, int $fileId): BinaryFileResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
+        $user = new User();
+        $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+        if ($user->canRead() === false) {
+            die("Перенаправление на страницу логина");
+        }
         $path = $file->getDownloadPath();
         $headers = [
             'Content-Security-Policy' => "default-src 'none'; script-src 'none'; form-action 'none'",
@@ -66,9 +72,14 @@ class FileHosting extends Controller
             : response()->download($path, null, $headers);
     }
 
-    public function show(int $fileId): View
+    public function show(Request $request, int $fileId): View
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
+        $user = new User();
+        $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+        if ($user->canRead() === false) {
+            die("Перенаправление на страницу логина");
+        }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $size = $file->getSize();
         $uploadDate = $file->getUploadDate();
@@ -79,6 +90,9 @@ class FileHosting extends Controller
         return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
+    /**
+     * @throws InvalidPayload
+     */
     public function checkPassword(Request $request, int $fileId)
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
@@ -101,6 +115,11 @@ class FileHosting extends Controller
         $nameToSave = $originalName;
         $description = $request->description;
         $file = $this->simpleFactoryFile->createByDB($fileId);
+        $user = new User();
+        $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+        if ($user->canWrite() === false) {
+            die("Перенаправление на страницу логина");
+        }
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
     }

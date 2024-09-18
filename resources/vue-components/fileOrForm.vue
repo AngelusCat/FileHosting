@@ -16,7 +16,7 @@
     }
     function isUserAuthenticated()
     {
-        let response = fetch("http://file/auth/" + props.fileId).then(response => response.json()).then(result => auth.value = result.success);
+        let response = fetch("http://file/auth/" + props.fileId).then(response => response.json()).then(result => console.log(result));
     }
 </script>
 

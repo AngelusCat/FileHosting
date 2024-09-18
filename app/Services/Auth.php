@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidPayload;
 use Illuminate\Http\Request;
 
 class Auth
