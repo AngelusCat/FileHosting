@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Random\RandomException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use function PHPUnit\Framework\isNull;
 
 class FileHosting extends Controller
 {
@@ -96,14 +97,23 @@ class FileHosting extends Controller
     public function checkPassword(Request $request, int $fileId)
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
-        $passwordTDG = new PasswordTDG("viewing_passwords");
+
+        if ($request->has("passwordR")) {
+            $passwordTDG = new PasswordTDG("viewing_passwords");
+            $enteredPassword = $request->passwordR;
+            $cookieName = "jwt_r";
+        } elseif ($request->has("passwordW")) {
+            $passwordTDG = new PasswordTDG("modify_passwords");
+            $enteredPassword = $request->passwordW;
+            $cookieName = "jwt_w";
+        }
         $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $passwordTDG);
-        if ($password->isPasswordCorrect($request->password)) {
+        if ($password->isPasswordCorrect($enteredPassword)) {
             $payload = json_encode([
                 "file_id" => $file->getId(),
             ]);
             $jwt = $this->jwtAuth->createJWT($payload);
-            return redirect(route("files.show", ["file" => $file->getId()]))->cookie("jwt", $jwt->getAll(), 1);
+            return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookieName, $jwt->getAll(), 1);
         } else {
             die('bad pass');
         }

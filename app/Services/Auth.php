@@ -9,6 +9,11 @@ class Auth
 {
     private JWTAuth $authenticator;
 
+    public function __construct()
+    {
+        $this->authenticator = new JWTAuth();
+    }
+
     public function isUserAuthenticated(Request $request, string $permission, int $fileId): bool
     {
         $cookieName = "jwt_" . $permission;

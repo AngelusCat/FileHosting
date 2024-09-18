@@ -22,7 +22,7 @@ Route::get('/generatePassword', function () {
 
 Route::get('/{file}/viewingPassword', function (Request $request) {
     $fileId = $request->file;
-    return view('passwordForPrivateFile', compact('fileId'));
+    return view('passwordR', compact('fileId'));
 })->name("viewingPassword");
 
 Route::post('/{file}/viewingPassword', [FileHosting::class, 'checkPassword'])->name("viewingPassword.checkPassword");
@@ -76,4 +76,8 @@ Route::get('/test4/{file}', function (Request $request, int $fileId) {
         $group->makeFileReadableOnlyByGroup($password, $file);
     }
     $group->makeFileWritableOnlyByGroup($password2, $file);
+});
+
+Route::get('/test5/{file}', function (Request $request, int $fileId) {
+    return view("passwordR", compact('fileId'));
 });

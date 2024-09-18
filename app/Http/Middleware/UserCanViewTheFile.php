@@ -24,11 +24,11 @@ class UserCanViewTheFile
         $viewingStatus = $file->getViewingStatus();
 
         if ($viewingStatus->name === 'private') {
-            if (empty($request->cookie('jwt'))) {
+            if (empty($request->cookie('jwt_r'))) {
                 //return redirect($file->getId() . "/privatePassword");
                 return redirect(route("viewingPassword", ["file" => $file->getId()], false));
             } else {
-                $jwt = $this->jwtAuth->getJwtFromStringRepresentation($request->cookie('jwt'));
+                $jwt = $this->jwtAuth->getJwtFromStringRepresentation($request->cookie('jwt_r'));
                 $fileIdFromJWT = $jwt->getDecoratedPayload()["file_id"];
                 if ($this->jwtAuth->validateJWT($jwt) === false || $fileIdFromJWT !== $file->getId()) {
                     return redirect(route("viewingPassword", ["file" => $file->getId()], false));
