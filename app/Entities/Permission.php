@@ -13,6 +13,7 @@ abstract class Permission
 
     public function __construct(Request $request, File $file)
     {
+        $this->auth = new Auth();
         $this->determinePermissionValue($request, $file);
     }
     abstract protected function determinePermissionValue(Request $request, File $file): void;

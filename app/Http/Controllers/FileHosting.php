@@ -58,7 +58,7 @@ class FileHosting extends Controller
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
-        $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+        $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
             die("Перенаправление на страницу логина");
         }
@@ -76,7 +76,7 @@ class FileHosting extends Controller
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
-        $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+        $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
             die("Перенаправление на страницу логина");
         }
@@ -116,7 +116,7 @@ class FileHosting extends Controller
         $description = $request->description;
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
-        $user->setPermissionsRelativeToCurrentFile($request, $file->getViewingStatus(), $fileId);
+        $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
             die("Перенаправление на страницу логина");
         }
