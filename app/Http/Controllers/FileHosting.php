@@ -13,6 +13,7 @@ use App\Services\PasswordTDG;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\View\View;
 use Random\RandomException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -99,15 +100,18 @@ class FileHosting extends Controller
         $file = $this->simpleFactoryFile->createByDB($fileId);
 
         if ($request->has("passwordR")) {
-            $passwordTDG = new PasswordTDG("viewing_passwords");
+//            $passwordTDG = new PasswordTDG("viewing_passwords");
+            $tableName = "viewing_passwords";
             $enteredPassword = $request->passwordR;
             $cookieName = "jwt_r";
         } elseif ($request->has("passwordW")) {
-            $passwordTDG = new PasswordTDG("modify_passwords");
+            /*$passwordTDG = new PasswordTDG("modify_passwords");*/
+            $tableName = "modify_passwords";
             $enteredPassword = $request->passwordW;
             $cookieName = "jwt_w";
         }
-        $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $passwordTDG);
+        $passwordTDG = App::makeWith(PasswordTDG::class, ['tableName' => $tableName]);
+        $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $tableName);
         if ($password->isPasswordCorrect($enteredPassword)) {
             $payload = json_encode([
                 "file_id" => $file->getId(),

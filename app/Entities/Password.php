@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use App\Services\PasswordTDG;
+use Illuminate\Support\Facades\App;
 
 class Password
 {
@@ -10,11 +11,11 @@ class Password
     private string $password;
     private PasswordTDG $passwordTDG;
 
-    public function __construct(string $password, File $file, PasswordTDG $passwordTDG)
+    public function __construct(string $password, File $file, string $tableName)
     {
         $this->password = password_hash($password, PASSWORD_DEFAULT);
         $this->file = $file;
-        $this->passwordTDG = $passwordTDG;
+        $this->passwordTDG = App::makeWith(PasswordTDG::class, ['tableName' => $tableName]);
     }
 
     public function install(): void

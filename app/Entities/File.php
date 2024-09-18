@@ -22,7 +22,6 @@ abstract class File
     protected Carbon $uploadDate;
     protected string $description;
     protected ViewingStatus $viewingStatus;
-
     protected FilesTDG $filesTDG;
     protected Antivirus  $antivirus;
 
@@ -37,9 +36,8 @@ abstract class File
         $this->description = $description;
         $this->viewingStatus = $viewingStatus;
         $this->securityStatus = $securityStatus;
-
-        $this->filesTDG = new FilesTDG();
-        $this->antivirus = new VirusTotal();
+        $this->filesTDG = resolve(FilesTDG::class);
+        $this->antivirus = resolve(VirusTotal::class);
     }
 
     public function getId(): ?int
