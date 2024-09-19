@@ -25,6 +25,11 @@ Route::get('/{file}/viewingPassword', function (Request $request) {
     return view('passwordR', compact('fileId'));
 })->name("viewingPassword");
 
+Route::get('/{file}/modifyPassword', function (Request $request) {
+    $fileId = $request->file;
+    return view('passwordW', compact('fileId'));
+})->name("modifyPassword");
+
 Route::post('/{file}/viewingPassword', [FileHosting::class, 'checkPassword'])->name("viewingPassword.checkPassword");
 
 Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("files.changeMetadata");

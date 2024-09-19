@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Auth $auth, private Group $group, private SimplePasswordFactory $simplePasswordFactory){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Auth $auth, private Group $group){}
 
     /**
      * @throws RandomException
@@ -60,7 +60,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            die("Перенаправление на страницу логина");
+            redirect(route("viewingPassword", ["file" => $fileId]));
         }
         $path = $file->getDownloadPath();
         $headers = [
@@ -78,7 +78,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            die("Перенаправление на страницу логина");
+            redirect(route("viewingPassword", ["file" => $fileId]));
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $size = $file->getSize();
@@ -122,7 +122,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
-            die("Перенаправление на страницу логина");
+            redirect(route("modifyPassword", ["file" => $fileId]));
         }
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
