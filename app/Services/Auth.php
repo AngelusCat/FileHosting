@@ -3,18 +3,20 @@
 namespace App\Services;
 
 use App\Entities\File;
-use App\Entities\JWT;
-use App\Entities\Password;
 use App\Exceptions\InvalidPayload;
+use App\Factories\SimplePasswordFactory;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class Auth
 {
     private JWTAuth $authenticator;
+    private SimplePasswordFactory $simplePasswordFactory;
 
     public function __construct()
     {
         $this->authenticator = new JWTAuth();
+        $this->simplePasswordFactory = new SimplePasswordFactory();
     }
 
     public function isUserAuthenticated(Request $request, string $permission, int $fileId): bool
@@ -32,17 +34,18 @@ class Auth
     /**
      * @throws InvalidPayload
      */
-    public function authenticate(string $permission, string $enteredPassword, File $file): JWT
+    public function authenticate(string $permission, string $enteredPassword, File $file): ?Cookie
     {
-        $tableName = "passwords_" . mb_strtolower($permission);
-        $passwordTDG = new PasswordTDG($tableName);
-        $passwordFromDB = $passwordTDG->getPasswordByFileId($file->getId());
-        $password = new Password($passwordFromDB, $file, $passwordTDG);
+        $password = ($permission === "r") ? $this->simplePasswordFactory->createViewingPassword($file) : $this->simplePasswordFactory->createModifyPassword($file);
+
         if ($password->isPasswordCorrect($enteredPassword)) {
             $payload = json_encode([
                 "file_id" => $file->getId(),
             ]);
-           return $this->authenticator->createJWT($payload);
+            $jwt = $this->authenticator->createJWT($payload);
+            $cookieName = "jwt_" . $permission;
+            return cookie($cookieName, $jwt->getAll(), 1);
         }
+        return null;
     }
 }

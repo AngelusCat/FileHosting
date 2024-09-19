@@ -3,25 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Entities\Group;
-use App\Entities\Password;
 use App\Entities\User;
 use App\Exceptions\InvalidPayload;
 use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
+use App\Factories\SimplePasswordFactory;
+use App\Services\Auth;
 use App\Services\JWTAuth;
-use App\Services\PasswordTDG;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\View\View;
 use Random\RandomException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use function PHPUnit\Framework\isNull;
 
 class FileHosting extends Controller
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private JWTAuth $jwtAuth, private Group $group){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Auth $auth, private Group $group, private SimplePasswordFactory $simplePasswordFactory){}
 
     /**
      * @throws RandomException
@@ -95,32 +93,24 @@ class FileHosting extends Controller
     /**
      * @throws InvalidPayload
      */
-    public function checkPassword(Request $request, int $fileId)
+    public function checkPassword(Request $request, int $fileId): RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
 
-        if ($request->has("passwordR")) {
-//            $passwordTDG = new PasswordTDG("viewing_passwords");
-            $tableName = "viewing_passwords";
-            $enteredPassword = $request->passwordR;
-            $cookieName = "jwt_r";
-        } elseif ($request->has("passwordW")) {
-            /*$passwordTDG = new PasswordTDG("modify_passwords");*/
-            $tableName = "modify_passwords";
-            $enteredPassword = $request->passwordW;
-            $cookieName = "jwt_w";
+        $permission = ($request->has("passwordR")) ? "r" : (($request->has("passwordW")) ? "w" : null);
+        $enteredPassword = ($request->has("passwordR")) ? $request->passwordR : (($request->has("passwordW")) ? $request->passwordW : null);
+
+        if ($permission === null || $enteredPassword === null) {
+            dd("bad");
         }
-        $passwordTDG = App::makeWith(PasswordTDG::class, ['tableName' => $tableName]);
-        $password = new Password($passwordTDG->getPasswordByFileId($file->getId()), $file, $tableName);
-        if ($password->isPasswordCorrect($enteredPassword)) {
-            $payload = json_encode([
-                "file_id" => $file->getId(),
-            ]);
-            $jwt = $this->jwtAuth->createJWT($payload);
-            return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookieName, $jwt->getAll(), 1);
-        } else {
-            die('bad pass');
+
+        $cookie = $this->auth->authenticate($permission, $enteredPassword, $file);
+
+        if ($cookie === null) {
+            dd("bad");
         }
+
+        return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookie);
     }
 
     public function changeMetadata(Request $request, int $fileId)
