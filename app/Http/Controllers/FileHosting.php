@@ -54,13 +54,13 @@ class FileHosting extends Controller
         }
     }
 
-    public function download(Request $request, int $fileId): BinaryFileResponse
+    public function download(Request $request, int $fileId): BinaryFileResponse|RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            redirect(route("viewingPassword", ["file" => $fileId]));
+            return redirect(route("viewingPassword", ["file" => $fileId]));
         }
         $path = $file->getDownloadPath();
         $headers = [
@@ -72,13 +72,13 @@ class FileHosting extends Controller
             : response()->download($path, null, $headers);
     }
 
-    public function show(Request $request, int $fileId): View
+    public function show(Request $request, int $fileId): View|RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            redirect(route("viewingPassword", ["file" => $fileId]));
+            return redirect(route("viewingPassword", ["file" => $fileId]));
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $size = $file->getSize();
@@ -90,40 +90,17 @@ class FileHosting extends Controller
         return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
-    /**
-     * @throws InvalidPayload
-     */
-    public function checkPassword(Request $request, int $fileId): RedirectResponse
+    public function changeMetadata(Request $request, int $fileId): ?RedirectResponse
     {
-        $file = $this->simpleFactoryFile->createByDB($fileId);
-
-        $permission = ($request->has("passwordR")) ? "r" : (($request->has("passwordW")) ? "w" : null);
-        $enteredPassword = ($request->has("passwordR")) ? $request->passwordR : (($request->has("passwordW")) ? $request->passwordW : null);
-
-        if ($permission === null || $enteredPassword === null) {
-            dd("bad");
-        }
-
-        $cookie = $this->auth->authenticate($permission, $enteredPassword, $file);
-
-        if ($cookie === null) {
-            dd("bad");
-        }
-
-        return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookie);
-    }
-
-    public function changeMetadata(Request $request, int $fileId)
-    {
-        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
-        $nameToSave = $originalName;
-        $description = $request->description;
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
-            redirect(route("modifyPassword", ["file" => $fileId]));
+            return redirect(route("modifyPassword", ["file" => $fileId]));
         }
+        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
+        $nameToSave = $originalName;
+        $description = $request->description;
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
     }
