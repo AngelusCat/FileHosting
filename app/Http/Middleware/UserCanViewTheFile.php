@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Enums\ViewingStatus;
 use App\Factories\SimpleFactoryFile;
+use App\Services\Auth;
 use App\Services\FilesTDG;
 use App\Services\JWTAuth;
 use Closure;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserCanViewTheFile
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private JWTAuth $jwtAuth){}
+    public function __construct(private Auth $auth){}
     /**
      * Handle an incoming request.
      *
@@ -20,20 +21,8 @@ class UserCanViewTheFile
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $file = $this->simpleFactoryFile->createByDB($request->file);
-        $viewingStatus = $file->getViewingStatus();
-
-        if ($viewingStatus->name === 'private') {
-            if (empty($request->cookie('jwt_r'))) {
-                //return redirect($file->getId() . "/privatePassword");
-                return redirect(route("viewingPassword", ["file" => $file->getId()], false));
-            } else {
-                $jwt = $this->jwtAuth->getJwtFromStringRepresentation($request->cookie('jwt_r'));
-                $fileIdFromJWT = $jwt->getDecoratedPayload()["file_id"];
-                if ($this->jwtAuth->validateJWT($jwt) === false || $fileIdFromJWT !== $file->getId()) {
-                    return redirect(route("viewingPassword", ["file" => $file->getId()], false));
-                }
-            }
+        if ($this->auth->isUserAuthenticated($request, "r", $request->file) === false) {
+            return redirect(route("viewingPassword", ["file" => $request->file], false));
         }
         return $next($request);
     }
