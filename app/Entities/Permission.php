@@ -5,6 +5,7 @@ namespace App\Entities;
 use App\Enums\ViewingStatus;
 use App\Services\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 abstract class Permission
 {
@@ -13,7 +14,7 @@ abstract class Permission
 
     public function __construct(Request $request, File $file)
     {
-        $this->auth = new Auth();
+        $this->auth = App::make(Auth::class);
         $this->determinePermissionValue($request, $file);
     }
     abstract protected function determinePermissionValue(Request $request, File $file): void;
