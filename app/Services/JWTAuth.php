@@ -26,8 +26,8 @@ class JWTAuth
      */
     public function createJWT(string $payload): JWT
     {
-        if (str_contains($payload, "file_id") === false) {
-            throw new InvalidPayload("Payload must contain the file_id field");
+        if (str_contains($payload, "file_id") === false || str_contains($payload, "permissions") === false) {
+            throw new InvalidPayload("Payload must contain file_id and permissions fields");
         }
         $headerBase64 = base64_encode($this->header);
         $payloadBase64 = base64_encode($payload);

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Auth $auth, private Group $group){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Group $group){}
 
     /**
      * @throws RandomException
