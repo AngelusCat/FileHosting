@@ -7,17 +7,13 @@
 
     let action = "http://file/files/" + props.fileId;
 
-    let auth = ref(false);
+    
 
     function changeVisibility()
     {
-        isUserAuthenticated();
         isFileBeingEdited.value = (isFileBeingEdited.value === false);
     }
-    function isUserAuthenticated()
-    {
-        let response = fetch("http://file/auth/" + props.fileId).then(response => response.json()).then(result => console.log(result));
-    }
+
 </script>
 
 <template>
