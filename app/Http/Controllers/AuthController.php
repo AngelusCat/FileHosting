@@ -19,14 +19,13 @@ class AuthController extends Controller
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
 
-        $permission = ($request->has("passwordR")) ? "r" : (($request->has("passwordW")) ? "w" : null);
-        $enteredPassword = ($request->has("passwordR")) ? $request->passwordR : (($request->has("passwordW")) ? $request->passwordW : null);
+        $enteredPassword = ($request->has("password")) ? $request->input("password") : null;
 
-        if ($permission === null || $enteredPassword === null) {
+        if ($enteredPassword === null) {
             dd("bad");
         }
 
-        $cookie = $this->auth->authenticate($permission, $enteredPassword, $file);
+        $cookie = $this->auth->authenticate($enteredPassword, $file);
 
         if ($cookie === null) {
             dd("bad");

@@ -13,7 +13,7 @@ class PermissionR extends Permission
         if ($file->getViewingStatus()->name === "public") {
             $this->permission = "r";
         } else {
-            $this->permission = ($this->auth->isUserAuthenticated($request, "r", $file->getId())) ? "r" : (($this->auth->isUserAuthenticated($request, "w", $file->getId())) ? "r" : "-");
+            $this->permission = ($this->auth->isUserAuthenticated($request, "r", $file->getId())) ? "r" : "-";
         }
     }
 }

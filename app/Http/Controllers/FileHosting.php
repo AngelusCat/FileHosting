@@ -60,7 +60,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            return redirect(route("viewingPassword", ["file" => $fileId]));
+            return redirect(route("password", ["file" => $fileId]));
         }
         $path = $file->getDownloadPath();
         $headers = [
@@ -78,7 +78,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            return redirect(route("viewingPassword", ["file" => $fileId]));
+            return redirect(route("password", ["file" => $fileId]));
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $size = $file->getSize();
@@ -96,7 +96,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
-            return redirect(route("modifyPassword", ["file" => $fileId]));
+            return redirect(route("password", ["file" => $fileId]));
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
         $nameToSave = $originalName;

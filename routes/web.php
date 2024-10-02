@@ -18,15 +18,10 @@ Route::get('/files/{file}/content', [FileHosting::class, 'download'])->name("fil
 
 Route::get('/generatePassword', [FetchRequestController::class, 'generatePassword'])->name("generatePassword");
 
-Route::get('/{file}/viewingPassword', function (Request $request) {
+Route::get('/{file}/password', function (Request $request) {
     $fileId = $request->file;
-    return view('passwordR', compact('fileId'));
-})->name("viewingPassword");
-
-Route::get('/{file}/modifyPassword', function (Request $request) {
-    $fileId = $request->file;
-    return view('passwordW', compact('fileId'));
-})->name("modifyPassword");
+    return view('password', compact('fileId'));
+})->name("password");
 
 Route::post('/{file}/checkPassword', [AuthController::class, 'checkPassword'])->name("checkPassword");
 

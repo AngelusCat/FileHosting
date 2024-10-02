@@ -7,7 +7,7 @@
 
     let action = "http://file/files/" + props.fileId;
 
-    
+
 
     function changeVisibility()
     {
@@ -29,7 +29,6 @@
         <p>Статус проверки на virus total: {{ props.securityStatus }}</p>
         <a :href="props.downloadLink">Скачать файл</a><br><br>
         <button type="submit" form="form">Сохранить изменения</button><br><br>
-        <p>{{ auth }}</p>
         <button @click="changeVisibility">Выйти из редактирования</button>
     </div>
     <div v-else>
