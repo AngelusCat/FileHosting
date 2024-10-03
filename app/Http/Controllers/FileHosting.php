@@ -37,7 +37,7 @@ class FileHosting extends Controller
             $this->group->makeFileReadableOnlyByGroup($visibilityPassword, $file);
         }
 
-        $modifyPassword = bin2hex(random_bytes(5));
+        $modifyPassword = $request->modifyPassword;
         $this->group->makeFileWritableOnlyByGroup($modifyPassword, $file);
 
         if ($request->url() === route("api.files.post")) {
@@ -90,7 +90,7 @@ class FileHosting extends Controller
         return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
-    public function changeMetadata(Request $request, int $fileId): ?RedirectResponse
+    public function changeMetadata(Request $request, int $fileId)
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();

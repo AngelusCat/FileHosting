@@ -12,7 +12,7 @@
     <div id="app">
         <form action="{{ route("files.upload") }}" method="post" enctype="multipart/form-data" id="form">
             @csrf
-            <form-vue></form-vue>
+            <form-vue :modify-password='@json($modifyPassword)'></form-vue>
         </form>
     </div>
 </body>

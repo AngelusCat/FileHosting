@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    $modifyPassword = bin2hex(random_bytes(5));
+    return view('home', ['modifyPassword' => $modifyPassword]);
 })->name("files.home");
 
 Route::post('/files', [FileHosting::class, 'upload'])->name('files.upload');
