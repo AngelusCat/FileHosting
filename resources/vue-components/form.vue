@@ -58,7 +58,7 @@ function generatePassword()
         </div>
     </p>
     <p>
-        Запомните этот пароль, чтобы в будущем Вы могли изменять метаданные этого файла и иметь возможность удалить этот файл:
+        Запомните этот пароль, чтобы в будущем Вы могли изменять метаданные этого файла и удалить этот файл:
         <input type="text" name="modifyPassword" v-bind:value="props.modifyPassword">
     </p>
     <button type="submit">Отправить</button>
