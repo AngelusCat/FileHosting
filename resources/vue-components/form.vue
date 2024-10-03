@@ -5,6 +5,7 @@ let fileFromDropArea = ref();
 let divStyle = ref("display: none");
 let requiredPassword = ref(null);
 let privatePassword = ref();
+let props = defineProps(['modifyPassword']);
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -55,6 +56,10 @@ function generatePassword()
             <input type="text" name="visibilityPassword" form="form" v-bind:required="requiredPassword" v-bind:value="privatePassword">&nbsp
             <button type="button" @click="generatePassword">Сгенерировать пароль</button>
         </div>
+    </p>
+    <p>
+        Запомните этот пароль, чтобы в будущем Вы могли изменять метаданные этого файла и иметь возможность удалить этот файл:
+        <input type="text" name="modifyPassword" v-bind:value="props.modifyPassword">
     </p>
     <button type="submit">Отправить</button>
 </template>

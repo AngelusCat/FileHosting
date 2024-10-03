@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    $modifyPassword = bin2hex(random_bytes(5));
+    return view('home', ['modifyPassword' => $modifyPassword]);
 })->name("files.home");
 
 Route::post('/files', [FileHosting::class, 'upload'])->name('files.upload');
@@ -18,15 +19,10 @@ Route::get('/files/{file}/content', [FileHosting::class, 'download'])->name("fil
 
 Route::get('/generatePassword', [FetchRequestController::class, 'generatePassword'])->name("generatePassword");
 
-Route::get('/{file}/viewingPassword', function (Request $request) {
+Route::get('/{file}/password', function (Request $request) {
     $fileId = $request->file;
-    return view('passwordR', compact('fileId'));
-})->name("viewingPassword");
-
-Route::get('/{file}/modifyPassword', function (Request $request) {
-    $fileId = $request->file;
-    return view('passwordW', compact('fileId'));
-})->name("modifyPassword");
+    return view('password', compact('fileId'));
+})->name("password");
 
 Route::post('/{file}/checkPassword', [AuthController::class, 'checkPassword'])->name("checkPassword");
 

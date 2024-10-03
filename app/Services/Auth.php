@@ -21,30 +21,32 @@ class Auth
 
     public function isUserAuthenticated(Request $request, string $permission, int $fileId): bool
     {
-        $cookieName = "jwt_" . $permission;
-        if ($request->hasCookie($cookieName) === false) {
-            return false;
-        } else {
-            $jwt = $this->authenticator->getJwtFromStringRepresentation($request->cookie($cookieName));
-            $fileIdFromPayload = $jwt->getDecoratedPayload()["file_id"];
-            return ($this->authenticator->validateJWT($jwt) && $fileIdFromPayload === $fileId);
+        if ($request->hasCookie("jwt")) {
+            $jwt = $this->authenticator->getJwtFromStringRepresentation($request->cookie("jwt"));
+            $payload = $jwt->getDecoratedPayload();
+            if ($this->authenticator->validateJWT($jwt) && $payload["file_id"] === $fileId) {
+                return $permission === "r" || $permission === "w" && $payload["permissions"] === "all";
+            }
         }
+        return false;
     }
 
     /**
      * @throws InvalidPayload
      */
-    public function authenticate(string $permission, string $enteredPassword, File $file): ?Cookie
+    public function authenticate(string $enteredPassword, File $file): ?Cookie
     {
-        $password = ($permission === "r") ? $this->simplePasswordFactory->createViewingPassword($file) : $this->simplePasswordFactory->createModifyPassword($file);
+        $rPassword = $this->simplePasswordFactory->createViewingPassword($file);
+        $wPassword = $this->simplePasswordFactory->createModifyPassword($file);
 
-        if ($password->isPasswordCorrect($enteredPassword)) {
+        if ($rPassword->isPasswordCorrect($enteredPassword) || $wPassword->isPasswordCorrect($enteredPassword)) {
+            $permissions = ($rPassword->isPasswordCorrect($enteredPassword)) ? "readonly" : "all";
             $payload = json_encode([
                 "file_id" => $file->getId(),
+                "permissions" => $permissions
             ]);
-            $jwt = $this->authenticator->createJWT($payload);
-            $cookieName = "jwt_" . $permission;
-            return cookie($cookieName, $jwt->getAll(), 1);
+            $jwt = $this->authenticator->createJwt($payload);
+            return cookie("jwt", $jwt->getAll(), 10);
         }
         return null;
     }
