@@ -46,7 +46,7 @@ class Auth
                 "permissions" => $permissions
             ]);
             $jwt = $this->authenticator->createJwt($payload);
-            return cookie("jwt", $jwt->getAll(), 10);
+            return cookie("jwt", $jwt->getAll(), 1);
         }
         return null;
     }

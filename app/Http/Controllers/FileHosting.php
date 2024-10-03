@@ -90,7 +90,7 @@ class FileHosting extends Controller
         return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
-    public function changeMetadata(Request $request, int $fileId)
+    public function changeMetadata(Request $request, int $fileId): RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
@@ -103,5 +103,6 @@ class FileHosting extends Controller
         $description = $request->description;
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
+        return redirect(route("files.show", ["file" => $fileId]));
     }
 }
