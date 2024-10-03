@@ -36,17 +36,23 @@ class Auth
      */
     public function authenticate(string $enteredPassword, File $file): ?Cookie
     {
-        $rPassword = $this->simplePasswordFactory->createViewingPassword($file);
+        $condition = false;
+
+        if ($file->getViewingStatus()->name === "private") {
+            $rPassword = $this->simplePasswordFactory->createViewingPassword($file);
+            $condition = $rPassword->isPasswordCorrect($enteredPassword);
+        }
+
         $wPassword = $this->simplePasswordFactory->createModifyPassword($file);
 
-        if ($rPassword->isPasswordCorrect($enteredPassword) || $wPassword->isPasswordCorrect($enteredPassword)) {
-            $permissions = ($rPassword->isPasswordCorrect($enteredPassword)) ? "readonly" : "all";
+        if ($condition || $wPassword->isPasswordCorrect($enteredPassword)) {
+            $permissions = ($condition) ? "readonly" : "all";
             $payload = json_encode([
                 "file_id" => $file->getId(),
                 "permissions" => $permissions
             ]);
             $jwt = $this->authenticator->createJwt($payload);
-            return cookie("jwt", $jwt->getAll(), 1);
+            return cookie("jwt", $jwt->getAll(), 10);
         }
         return null;
     }

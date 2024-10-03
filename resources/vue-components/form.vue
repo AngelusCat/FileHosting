@@ -52,13 +52,14 @@ function generatePassword()
         <input type="radio" name="viewingStatus" value="public" @click="clickPublic">Публичный<br>
         <input type="radio" name="viewingStatus" value="private" @click="clickPrivate">Приватный
         <div v-bind:style="divStyle">
-            <p>Введите пароль: </p>
+            <p>Введите пароль (позволяет только просматривать приватный файл): </p>
             <input type="text" name="visibilityPassword" form="form" v-bind:required="requiredPassword" v-bind:value="privatePassword">&nbsp
             <button type="button" @click="generatePassword">Сгенерировать пароль</button>
         </div>
     </p>
     <p>
-        Запомните этот пароль, чтобы в будущем Вы могли изменять метаданные этого файла и удалить этот файл:
+        Система поддерживает 2 пароля: один позволяет только видеть приватный файл, второй позволяет видеть приватный файл, редактировать его метаданные и удалять файл.
+        Пароль, чтобы получать все права над файлом:
         <input type="text" name="modifyPassword" v-bind:value="props.modifyPassword">
     </p>
     <button type="submit">Отправить</button>
