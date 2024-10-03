@@ -10,7 +10,7 @@
 <h1>Введите пароль:</h1>
 <form action="{{ route("checkPassword", ["file" => $fileId]) }}" method="post">
     @csrf
-    <input type="password" name="password" >
+    <input type="password" name="password">
     <input type="submit" value="Отправить">
 </form>
 </body>
