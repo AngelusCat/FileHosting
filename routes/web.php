@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $modifyPassword = bin2hex(random_bytes(5));
+    $modifyPassword = bin2hex(random_bytes(8));
     return view('home', ['modifyPassword' => $modifyPassword]);
 })->name("files.home");
 

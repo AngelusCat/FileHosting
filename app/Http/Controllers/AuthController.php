@@ -17,18 +17,24 @@ class AuthController extends Controller
      */
     public function checkPassword(Request $request, int $fileId): RedirectResponse
     {
+        $validated = $request->validate([
+            "password" => "filled|between:8,22",
+        ], [
+            "password.filled" => "Пароль не может быть пустым.",
+            "password.between" => "Пароль должен содержать от :min до :max символов.",
+        ], [
+            ":min" => 8,
+            ":max" => 22
+        ]);
+
         $file = $this->simpleFactoryFile->createByDB($fileId);
 
-        $enteredPassword = ($request->has("password")) ? $request->input("password") : null;
-
-        if ($enteredPassword === null) {
-            dd("bad");
-        }
+        $enteredPassword = $request->input("password");
 
         $cookie = $this->auth->authenticate($enteredPassword, $file);
 
         if ($cookie === null) {
-            dd("bad");
+            return back()->withErrors(["Пароль неверный."]);
         }
 
         return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookie);
