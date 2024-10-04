@@ -5,6 +5,7 @@ use App\Http\Controllers\FetchRequestController;
 use App\Http\Controllers\FileHosting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rules\File;
 
 Route::get('/', function () {
     $modifyPassword = bin2hex(random_bytes(8));
@@ -36,3 +37,17 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
         'file', $contents, $fileName
     )->post("http://file/api/files");
 });*/
+
+Route::get("/test", function () {
+    return view("test");
+});
+
+Route::post("/testpost", function (Request $request) {
+    $validated = $request->validate([
+        "attachment" => [
+            "required",
+            File::class->min("1b")->max("5mb")
+        ]
+    ]);
+    dump($validated);
+});
