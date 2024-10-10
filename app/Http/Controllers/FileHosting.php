@@ -8,6 +8,7 @@ use App\Exceptions\InvalidPayload;
 use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
 use App\Factories\SimplePasswordFactory;
+use App\Rules\OriginalNameUploadedFileRegex;
 use App\Services\Auth;
 use App\Services\JWTAuth;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,9 @@ class FileHosting extends Controller
      */
     public function upload(Request $request): JsonResponse|RedirectResponse
     {
+        $validated = $request->validate([
+            "file" => ["required", "between:0.0009,5120", new OriginalNameUploadedFileRegex]
+        ]);
         $file = $this->simpleFactoryFile->createByRequestFormData($request);
         $content = $request->file->getContent();
         $file->save($content);

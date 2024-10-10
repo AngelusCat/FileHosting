@@ -14,5 +14,12 @@
             @csrf
             <form-vue :modify-password='@json($modifyPassword)'></form-vue>
         </form>
+        @if($errors->any())
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        @endif
     </div>
 </body>
