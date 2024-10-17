@@ -29,7 +29,8 @@ class FileHosting extends Controller
     public function upload(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
-            "file" => ["required", "between:0.0009,5120", new OriginalNameUploadedFileRegex]
+            "file" => ["required", "between:0.0009,5120", new OriginalNameUploadedFileRegex],
+            "description" => ["nullable", "max: 1668", "regex:/^[a-zA-Zа-яёА-ЯЁ0-9\.,;:!?\-—\(\)\"\" ]+$/u"]
         ]);
         $file = $this->simpleFactoryFile->createByRequestFormData($request);
         $content = $request->file->getContent();

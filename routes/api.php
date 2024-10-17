@@ -21,8 +21,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/files', [FileHosting::class, 'upload'])->name('api.files.post');
 
-/*
- * POST /files
- * GET /files/id/content
- * HATEOAS http://file/api/files/id/content
- */

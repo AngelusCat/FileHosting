@@ -11,6 +11,7 @@
     <form action="/testpost" method="post" enctype="multipart/form-data" id="form">
         @csrf
         <input type="file" name="file">
+        <input type="test" name="descr">
         <button type="submit">submit!</button>
         @if($errors->any())
             <ul>
