@@ -30,7 +30,10 @@ class FileHosting extends Controller
     {
         $validated = $request->validate([
             "file" => ["required", "between:0.0009,5120", new OriginalNameUploadedFileRegex],
-            "description" => ["nullable", "max: 1668", "regex:/^[a-zA-Zа-яёА-ЯЁ0-9\.,;:!?\-—\(\)\"\" ]+$/u"]
+            "description" => ["nullable", "max: 1668", "regex:/^[a-zA-Zа-яёА-ЯЁ0-9\.,;:!?\-—\(\)\"\" ]+$/u"],
+            "viewingStatus" => ["nullable", "in:public,private"],
+            "visibilityPassword" => ["required_if:viewingStatus,private", "nullable"],
+            "modifyPassword" => ["required"],
         ]);
         $file = $this->simpleFactoryFile->createByRequestFormData($request);
         $content = $request->file->getContent();
