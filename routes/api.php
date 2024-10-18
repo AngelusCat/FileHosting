@@ -20,4 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/files', [FileHosting::class, 'upload'])->name('api.files.post');
-
+Route::get('/files/{id}/metadata', function ($id) {
+    return response()->json([
+        'id' => $id
+    ]);
+});
+Route::get('/files/{id}/content', function ($id) {
+    return response()->json([
+        'id' => $id
+    ]);
+});

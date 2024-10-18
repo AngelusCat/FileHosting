@@ -12,6 +12,6 @@ class FetchRequestController extends Controller
      */
     public function generatePassword(): JsonResponse
     {
-        return response()->json(['password' => bin2hex(random_bytes(5))]);
+        return response()->json(['password' => bin2hex(random_bytes(8))]);
     }
 }

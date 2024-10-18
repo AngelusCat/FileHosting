@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Entities\Group;
 use App\Entities\User;
+use App\Enums\ApiRequestStatus;
 use App\Exceptions\InvalidPayload;
 use App\Exceptions\UploadedFileIsNotValid;
 use App\Factories\SimpleFactoryFile;
@@ -46,14 +47,22 @@ class FileHosting extends Controller
         }
 
         $modifyPassword = $request->modifyPassword;
+
+        if ($modifyPassword === null && $request->url() === route("api.files.post")) {
+            $modifyPassword = bin2hex(random_bytes(8));
+        }
+
         $this->group->makeFileWritableOnlyByGroup($modifyPassword, $file);
 
         if ($request->url() === route("api.files.post")) {
             return response()->json([
+                'status' => ApiRequestStatus::success->name,
                 'data' => [
                     'id' => $fileId,
+                    'modifyPassword' => $modifyPassword,
                     'links' => [
-                        'self' => "http://file/files/$fileId/content"
+                        'metadata' => "http://file/api/files/$fileId/metadata",
+                        'content' => "http://file/api/files/$fileId/content"
                     ]
                 ]
             ]);
