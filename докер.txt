@@ -128,6 +128,7 @@ DB_DATABASE, DB_USERNAME, DB_PASSWORD вставить такие же знач�
 
 Запустить
 sudo docker compose run composer run install
+sudo docker exec -ti app-php-1 && chmod -R 777 /var/www/laravel/storage
 sudo docker compose run artisan key:generate
 sudo docker compose run artisan migrate
 sudo docker compose run npm install
