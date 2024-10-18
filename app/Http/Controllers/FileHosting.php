@@ -74,8 +74,8 @@ class FileHosting extends Controller
     public function download(Request $request, int $fileId): BinaryFileResponse|RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
-        $user = new User();
-        $user->setPermissionsRelativeToCurrentFile($request, $file);
+        $user = new User($request, $file);
+        //$user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
             return redirect(route("password", ["file" => $fileId]));
         }
@@ -92,8 +92,8 @@ class FileHosting extends Controller
     public function show(Request $request, int $fileId): View|RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
-        $user = new User();
-        $user->setPermissionsRelativeToCurrentFile($request, $file);
+        $user = new User($request, $file);
+        //$user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
             return redirect(route("password", ["file" => $fileId]));
         }
@@ -110,8 +110,8 @@ class FileHosting extends Controller
     public function changeMetadata(Request $request, int $fileId): RedirectResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
-        $user = new User();
-        $user->setPermissionsRelativeToCurrentFile($request, $file);
+        $user = new User($request, $file);
+        //$user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
             return redirect(route("password", ["file" => $fileId]));
         }
