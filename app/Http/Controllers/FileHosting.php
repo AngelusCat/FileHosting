@@ -115,7 +115,7 @@ class FileHosting extends Controller
         if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
             return response()->json([
                 'status' => ApiRequestStatus::success->name,
-                'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['content' => "http://file/api/files/$fileId/content"]
+                'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['link' => "http://file/api/files/$fileId/content"]
             ]);
         } else {
             return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));

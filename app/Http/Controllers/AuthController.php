@@ -48,7 +48,7 @@ class AuthController extends Controller
         if ($request->url() === route("api.auth.post", ['id' => $fileId])) {
             return response()->json([
                 'status' => ApiRequestStatus::success->name
-            ]);
+            ])->cookie($cookie);
         } else {
             return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookie);
         }
