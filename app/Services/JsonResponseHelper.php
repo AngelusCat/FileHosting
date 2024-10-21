@@ -36,8 +36,8 @@ class JsonResponseHelper
         return response()->json([
             'status' => ApiRequestStatus::fail->name,
             'data' => [
-                "message" => "Ошибка авторизации",
-                "links" => [
+                'message' => "Ошибка авторизации",
+                'links' => [
                     'auth' => sprintf($this->links['auth'], $fileId)
                 ]
             ]
