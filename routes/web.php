@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FetchRequestController;
 use App\Http\Controllers\FileHosting;
@@ -33,6 +34,8 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
 Route::get('/t', function () {
     return view("test");
 });
+
+Route::get('/api/controller/{id}', [ApiController::class, 'changeMetadata']);
 
 Route::post('/testpost', function (Request $request) {
     $validated = $request->validate([

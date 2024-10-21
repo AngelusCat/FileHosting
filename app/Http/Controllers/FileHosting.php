@@ -177,14 +177,7 @@ class FileHosting extends Controller
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
         if ($request->url() === route("api.files.update", ['id' => $fileId])) {
-            return response()->json([
-                'status' => ApiRequestStatus::success->name,
-                'data' => [
-                    'link' => [
-                        'metadata' => "http://file/api/files/$fileId/metadata"
-                    ]
-                ]
-            ]);
+            return redirect()->action([ApiController::class, 'changeMetadata'], ['id' => $fileId]);
         } else {
             return redirect(route("files.show", ["file" => $fileId]));
         }
