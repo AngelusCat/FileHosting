@@ -37,6 +37,7 @@ class FileHosting extends Controller
             "visibilityPassword" => ["required_if:viewingStatus,private", "nullable", "between:8,22", "regex:/[a-zA-Z0-9!@#$%\^&*\(\)\-—_+=;:,\.\/?\\|`~\[\]{}]+/"],
             "modifyPassword" => ["nullable", "between:8,22", "regex:/[a-zA-Z0-9!@#$%\^&*\(\)\-—_+=;:,\.\/?\\|`~\[\]{}]+/"]
         ]);
+        $isThisApiRequest = $request->url() === route("api.files.upload");
         $file = $this->simpleFactoryFile->createByRequestFormData($request);
         $content = $request->file->getContent();
         $file->save($content);
@@ -46,36 +47,28 @@ class FileHosting extends Controller
             $visibilityPassword = $request->visibilityPassword;
             $this->group->makeFileReadableOnlyByGroup($visibilityPassword, $file);
         }
-
         $modifyPassword = $request->modifyPassword;
-
-        if ($modifyPassword === null && $request->url() === route("api.files.upload")) {
+        if ($modifyPassword === null && $isThisApiRequest) {
             $modifyPassword = bin2hex(random_bytes(8));
         }
-
         $this->group->makeFileWritableOnlyByGroup($modifyPassword, $file);
 
-        if ($request->url() === route("api.files.upload")) {
-            return $this->jsonResponseHelper->getSuccessfulResponseForUpload($modifyPassword, $fileId);
-        } else {
-            return redirect(route("files.show", ["file" => $fileId]));
-        }
+        return ($isThisApiRequest) ? $this->jsonResponseHelper->getSuccessfulResponseForUpload($modifyPassword, $fileId) :
+            redirect(route("files.show", ["file" => $fileId]));
     }
 
     public function download(Request $request, int $fileId): BinaryFileResponse|RedirectResponse|JsonResponse
     {
+        $isThisApiRequest = $request->url() === route("api.files.content", ['id' => $fileId]);
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            if ($request->url() === route("api.files.content", ['id' => $fileId])) {
-                return $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId);
-            }
-            return redirect(route("password", ["file" => $fileId]));
+            return $this->sendAuthenticationResponse($isThisApiRequest, $fileId);
         }
         $path = $file->getDownloadPath();
 
-        if ($request->url() === route("api.files.content", ['id' => $fileId])) {
+        if ($isThisApiRequest) {
             return $this->jsonResponseHelper->getSuccessfulResponseForDownload($fileId, $path);
         }
 
@@ -90,14 +83,12 @@ class FileHosting extends Controller
 
     public function show(Request $request, int $fileId): View|RedirectResponse|JsonResponse
     {
+        $isThisApiRequest = $request->url() === route("api.files.metadata", ['id' => $fileId]);
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
-            if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
-                return $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId);
-            }
-            return redirect(route("password", ["file" => $fileId]));
+            return $this->sendAuthenticationResponse($isThisApiRequest, $fileId);
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $size = $file->getSize();
@@ -106,33 +97,29 @@ class FileHosting extends Controller
         $securityStatus = $file->getSecurityStatus()->value;
         $downloadLink = route("files.download", ["file" => $fileId]);
         $csrfToken = csrf_token();
-        if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
-            return $this->jsonResponseHelper->getSuccessfulResponseForShow($file);
-        } else {
-            return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
-        }
+        return ($isThisApiRequest) ? $this->jsonResponseHelper->getSuccessfulResponseForShow($file) :
+            view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
     public function changeMetadata(Request $request, int $fileId): RedirectResponse|JsonResponse
     {
+        $isThisApiRequest = $request->url() === route("api.files.update", ['id' => $fileId]);
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
-            if ($request->url() === route("api.files.update", ['id' => $fileId])) {
-                return $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId);
-            }
-            return redirect(route("password", ["file" => $fileId]));
+            $this->sendAuthenticationResponse($isThisApiRequest, $fileId);
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
         $nameToSave = $originalName;
         $description = $request->description;
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
-        if ($request->url() === route("api.files.update", ['id' => $fileId])) {
-            return $this->jsonResponseHelper->getSuccessfulResponseForChangeMetadata($fileId);
-        } else {
-            return redirect(route("files.show", ["file" => $fileId]));
-        }
+        return ($isThisApiRequest) ? $this->jsonResponseHelper->getSuccessfulResponseForChangeMetadata($fileId) : redirect(route("files.show", ["file" => $fileId]));
+    }
+
+    private function sendAuthenticationResponse(bool $isThisApiRequest, int $fileId): JsonResponse|RedirectResponse
+    {
+        return ($isThisApiRequest) ? $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId) : redirect(route("password", ["file" => $fileId]));
     }
 }
