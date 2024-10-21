@@ -20,14 +20,12 @@ use Illuminate\Support\Facades\Route;
     return $request->user();
 });*/
 
-Route::post('/files', [FileHosting::class, 'upload'])->name('api.files.post');
+Route::post('/files', [FileHosting::class, 'upload'])->name('api.files.upload');
 
 Route::get('/files/{id}/metadata', [FileHosting::class, 'show'])->name('api.files.metadata');
 
-Route::get('/files/{id}/content', function ($id) {
-    return response()->json([
-        'id' => $id
-    ]);
-});
+Route::get('/files/{id}/content', [FileHosting::class, 'download'])->name('api.files.content');
 
-Route::post('/auth/{id}', [AuthController::class, 'checkPassword'])->name('api.auth.post');
+Route::post('/auth/{id}', [AuthController::class, 'checkPassword'])->name('api.auth');
+
+Route::patch('/files/{id}', [FileHosting::class, 'changeMetadata'])->name('api.files.update');
