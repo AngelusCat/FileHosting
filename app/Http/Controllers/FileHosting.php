@@ -108,7 +108,7 @@ class FileHosting extends Controller
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
-            $this->sendAuthenticationResponse($isThisApiRequest, $fileId);
+            return $this->sendAuthenticationResponse($isThisApiRequest, $fileId);
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
         $nameToSave = $originalName;
