@@ -11,6 +11,7 @@ use App\Factories\SimpleFactoryFile;
 use App\Factories\SimplePasswordFactory;
 use App\Rules\OriginalNameUploadedFileRegex;
 use App\Services\Auth;
+use App\Services\JsonResponseHelper;
 use App\Services\JWTAuth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileHosting extends Controller
 {
-    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Group $group){}
+    public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Group $group, private JsonResponseHelper $jsonResponseHelper){}
 
     /**
      * @throws RandomException
@@ -48,23 +49,14 @@ class FileHosting extends Controller
 
         $modifyPassword = $request->modifyPassword;
 
-        if ($modifyPassword === null && $request->url() === route("api.files.post")) {
+        if ($modifyPassword === null && $request->url() === route("api.files.upload")) {
             $modifyPassword = bin2hex(random_bytes(8));
         }
 
         $this->group->makeFileWritableOnlyByGroup($modifyPassword, $file);
 
         if ($request->url() === route("api.files.upload")) {
-            return response()->json([
-                'status' => ApiRequestStatus::success->name,
-                'data' => [
-                    'modifyPassword' => $modifyPassword,
-                    'links' => [
-                        'metadata' => "http://file/api/files/$fileId/metadata",
-                        'content' => "http://file/api/files/$fileId/content"
-                    ]
-                ]
-            ]);
+            return $this->jsonResponseHelper->getSuccessfulResponseForUpload($modifyPassword, $fileId);
         } else {
             return redirect(route("files.show", ["file" => $fileId]));
         }
@@ -77,30 +69,14 @@ class FileHosting extends Controller
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
             if ($request->url() === route("api.files.content", ['id' => $fileId])) {
-                return response()->json([
-                    'status' => ApiRequestStatus::fail->name,
-                    'data' => [
-                        "message" => "Ошибка авторизации",
-                        "link" => [
-                            "auth" => "http://file/api/auth/$fileId"
-                        ]
-                    ]
-                ]);
+                return $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId);
             }
             return redirect(route("password", ["file" => $fileId]));
         }
         $path = $file->getDownloadPath();
 
         if ($request->url() === route("api.files.content", ['id' => $fileId])) {
-            return response()->json([
-                'status' => ApiRequestStatus::success->name,
-                'data' => [
-                    'content' => mb_convert_encoding(file_get_contents($path), 'utf8', 'UTF-8'),
-                    'link' => [
-                        'metadata' => "http://file/api/files/$fileId/metadata"
-                    ]
-                ]
-            ]);
+            return $this->jsonResponseHelper->getSuccessfulResponseForDownload($fileId, $path);
         }
 
         $headers = [
@@ -119,15 +95,7 @@ class FileHosting extends Controller
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
             if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
-                return response()->json([
-                    'status' => ApiRequestStatus::fail->name,
-                    'data' => [
-                        "message" => "Ошибка авторизации",
-                        "link" => [
-                            "auth" => "http://file/api/auth/$fileId"
-                        ]
-                    ]
-                ]);
+                return $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId);
             }
             return redirect(route("password", ["file" => $fileId]));
         }
@@ -139,14 +107,7 @@ class FileHosting extends Controller
         $downloadLink = route("files.download", ["file" => $fileId]);
         $csrfToken = csrf_token();
         if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
-            return response()->json([
-                'status' => ApiRequestStatus::success->name,
-                'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['link' => [
-                    'content' => "http://file/api/files/$fileId/content",
-                        'update' => "http://file/api/files/$fileId"
-                    ]
-                    ]
-            ]);
+            return $this->jsonResponseHelper->getSuccessfulResponseForShow($file);
         } else {
             return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
         }
@@ -159,15 +120,7 @@ class FileHosting extends Controller
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canWrite() === false) {
             if ($request->url() === route("api.files.update", ['id' => $fileId])) {
-                return response()->json([
-                    'status' => ApiRequestStatus::fail->name,
-                    'data' => [
-                        "message" => "Ошибка авторизации",
-                        "link" => [
-                            "auth" => "http://file/api/auth/$fileId"
-                        ]
-                    ]
-                ]);
+                return $this->jsonResponseHelper->getResponseUserIsNotAuthorized($fileId);
             }
             return redirect(route("password", ["file" => $fileId]));
         }
@@ -177,14 +130,7 @@ class FileHosting extends Controller
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");
         $file->changeMetadata($metadata);
         if ($request->url() === route("api.files.update", ['id' => $fileId])) {
-            return response()->json([
-                'status' => ApiRequestStatus::success->name,
-                'data' => [
-                    'link' => [
-                        'metadata' => "http://file/api/files/$fileId/metadata"
-                    ]
-                ]
-            ]);
+            return $this->jsonResponseHelper->getSuccessfulResponseForChangeMetadata($fileId);
         } else {
             return redirect(route("files.show", ["file" => $fileId]));
         }
