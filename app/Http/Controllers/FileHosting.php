@@ -58,7 +58,6 @@ class FileHosting extends Controller
             return response()->json([
                 'status' => ApiRequestStatus::success->name,
                 'data' => [
-                    'id' => $fileId,
                     'modifyPassword' => $modifyPassword,
                     'links' => [
                         'metadata' => "http://file/api/files/$fileId/metadata",
