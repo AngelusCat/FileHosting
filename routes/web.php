@@ -35,7 +35,6 @@ Route::get('/t', function () {
     return view("test");
 });
 
-Route::get('/api/controller/{id}', [ApiController::class, 'changeMetadata']);
 
 Route::post('/testpost', function (Request $request) {
     $validated = $request->validate([
