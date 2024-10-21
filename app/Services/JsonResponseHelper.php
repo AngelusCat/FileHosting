@@ -8,13 +8,24 @@ use Illuminate\Http\JsonResponse;
 
 class JsonResponseHelper
 {
+    private array $links;
+
+    public function __construct()
+    {
+        $this->links = [
+            'metadata' => "http://file/api/files/%d/metadata",
+            'auth' => "http://file/api/auth/%d",
+            'content' => "http://file/api/files/%d/content",
+            'update' => "http://file/api/files/%d"
+        ];
+    }
     public function getSuccessfulResponseForChangeMetadata(int $fileId): JsonResponse
     {
         return response()->json([
             'status' => ApiRequestStatus::success->name,
             'data' => [
-                'link' => [
-                    'metadata' => "http://file/api/files/$fileId/metadata"
+                'links' => [
+                    'metadata' => sprintf($this->links['metadata'], $fileId)
                 ]
             ]
         ]);
@@ -26,8 +37,8 @@ class JsonResponseHelper
             'status' => ApiRequestStatus::fail->name,
             'data' => [
                 "message" => "Ошибка авторизации",
-                "link" => [
-                    "auth" => "http://file/api/auth/$fileId"
+                "links" => [
+                    'auth' => sprintf($this->links['auth'], $fileId)
                 ]
             ]
         ]);
@@ -43,11 +54,10 @@ class JsonResponseHelper
         $securityStatus = $file->getSecurityStatus()->value;
         return response()->json([
             'status' => ApiRequestStatus::success->name,
-            'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['link' => [
-                    'content' => "http://file/api/files/$fileId/content",
-                    'update' => "http://file/api/files/$fileId"
-                ]
-                ]
+            'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['links' => [
+                    'content' => sprintf($this->links['content'], $fileId),
+                    'update' => sprintf($this->links['update'], $fileId)
+                ]]
         ]);
     }
 
@@ -57,8 +67,8 @@ class JsonResponseHelper
             'status' => ApiRequestStatus::success->name,
             'data' => [
                 'content' => mb_convert_encoding(file_get_contents($path), 'utf8', 'UTF-8'),
-                'link' => [
-                    'metadata' => "http://file/api/files/$fileId/metadata"
+                'links' => [
+                    'metadata' => sprintf($this->links['metadata'], $fileId)
                 ]
             ]
         ]);
@@ -71,8 +81,8 @@ class JsonResponseHelper
             'data' => [
                 'modifyPassword' => $modifyPassword,
                 'links' => [
-                    'metadata' => "http://file/api/files/$fileId/metadata",
-                    'content' => "http://file/api/files/$fileId/content"
+                    'metadata' => sprintf($this->links['metadata'], $fileId),
+                    'content' => sprintf($this->links['content'], $fileId)
                 ]
             ]
         ]);
