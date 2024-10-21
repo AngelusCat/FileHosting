@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileHosting;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +25,6 @@ Route::get('/files/{id}/metadata', [FileHosting::class, 'show'])->name('api.file
 
 Route::get('/files/{id}/content', [FileHosting::class, 'download'])->name('api.files.content');
 
-Route::post('/auth/{id}', [AuthController::class, 'checkPassword'])->name('api.auth');
+Route::post('/auth/files/{id}', [AuthController::class, 'checkPassword'])->name('api.auth');
 
 Route::patch('/files/{id}', [FileHosting::class, 'changeMetadata'])->name('api.files.update');
