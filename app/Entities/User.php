@@ -24,7 +24,8 @@ class User
  * Для public всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
  * Для private всегда w, если пользователь доказал принадлежность к группе наличием валидного ключа, иначе -
  */
-    public function __construct(Request $request, File $file)
+
+    public function setPermissionsRelativeToCurrentFile(Request $request, File $file): void
     {
         $this->permissions["R"] = new PermissionR($request, $file);
         $this->permissions["W"] = new PermissionW($request, $file);
