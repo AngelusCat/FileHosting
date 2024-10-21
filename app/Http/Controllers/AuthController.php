@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ApiRequestStatus;
 use App\Exceptions\InvalidPayload;
 use App\Factories\SimpleFactoryFile;
 use App\Services\Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -15,7 +17,7 @@ class AuthController extends Controller
     /**
      * @throws InvalidPayload
      */
-    public function checkPassword(Request $request, int $fileId): RedirectResponse
+    public function checkPassword(Request $request, int $fileId): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             "password" => "filled|between:8,22",
@@ -34,9 +36,21 @@ class AuthController extends Controller
         $cookie = $this->auth->authenticate($enteredPassword, $file);
 
         if ($cookie === null) {
+            if ($request->url() === route("api.auth.post", ['id' => $fileId])) {
+                return response()->json([
+                    'status' => ApiRequestStatus::fail->name,
+                    'message' => 'Пароль неверный'
+                ]);
+            }
             return back()->withErrors(["Пароль неверный."]);
         }
 
-        return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookie);
+        if ($request->url() === route("api.auth.post", ['id' => $fileId])) {
+            return response()->json([
+                'status' => ApiRequestStatus::success->name
+            ]);
+        } else {
+            return redirect(route("files.show", ["file" => $file->getId()]))->cookie($cookie);
+        }
     }
 }

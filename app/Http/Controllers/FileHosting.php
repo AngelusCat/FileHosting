@@ -88,12 +88,21 @@ class FileHosting extends Controller
             : response()->download($path, null, $headers);
     }
 
-    public function show(Request $request, int $fileId): View|RedirectResponse
+    public function show(Request $request, int $fileId): View|RedirectResponse|JsonResponse
     {
         $file = $this->simpleFactoryFile->createByDB($fileId);
         $user = new User();
         $user->setPermissionsRelativeToCurrentFile($request, $file);
         if ($user->canRead() === false) {
+            if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
+                return response()->json([
+                    'status' => ApiRequestStatus::fail->name,
+                    'data' => [
+                        "message" => "Ошибка авторизации",
+                        "link" => "http://file/api/auth/$fileId"
+                    ]
+                ]);
+            }
             return redirect(route("password", ["file" => $fileId]));
         }
         $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
@@ -103,7 +112,14 @@ class FileHosting extends Controller
         $securityStatus = $file->getSecurityStatus()->value;
         $downloadLink = route("files.download", ["file" => $fileId]);
         $csrfToken = csrf_token();
-        return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
+        if ($request->url() === route("api.files.metadata", ['id' => $fileId])) {
+            return response()->json([
+                'status' => ApiRequestStatus::success->name,
+                'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['content' => "http://file/api/files/$fileId/content"]
+            ]);
+        } else {
+            return view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
+        }
     }
 
     public function changeMetadata(Request $request, int $fileId): RedirectResponse
