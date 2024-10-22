@@ -7,11 +7,13 @@
 
     let action = "http://file/files/" + props.fileId;
 
+    let passwordShow = ref(false);
 
+    let result = ref("");
 
     function changeVisibility()
     {
-        isFileBeingEdited.value = (isFileBeingEdited.value === false);
+        //
     }
 
 </script>
@@ -29,7 +31,7 @@
         <p>Статус проверки на virus total: {{ props.securityStatus }}</p>
         <a :href="props.downloadLink">Скачать файл</a><br><br>
         <button type="submit" form="form">Сохранить изменения</button><br><br>
-        <button @click="changeVisibility">Выйти из редактирования</button>
+        <button @click="true">Выйти из редактирования</button>
     </div>
     <div v-else>
         <h1>Файл - {{ props.originalName }}</h1>
@@ -39,6 +41,11 @@
         <p>Статус проверки на virus total: {{ props.securityStatus }}</p>
         <a :href="props.downloadLink">Скачать файл</a><br><br>
         <button @click="changeVisibility">Редактировать</button>
+        <div v-if="passwordShow">
+            <p>
+                Пароль: <input type="text" name="password">
+            </p>
+        </div>
     </div>
 </template>
 

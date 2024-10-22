@@ -28,3 +28,5 @@ Route::get('/{file}/password', function (Request $request) {
 Route::post('/{file}/checkPassword', [AuthController::class, 'checkPassword'])->name("checkPassword");
 
 Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("files.changeMetadata");
+
+Route::get('/{permission}/{file}', [FetchRequestController::class, 'isUserAuthenticated']);
