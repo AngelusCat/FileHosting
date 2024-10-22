@@ -44,16 +44,16 @@ class FileHosting extends Controller
         $fileId = $file->getId();
 
         if ($file->getViewingStatus()->name === "private") {
-            $visibilityPassword = $request->visibilityPassword;
-            $this->group->makeFileReadableOnlyByGroup($visibilityPassword, $file);
+            $passwordR = $request->visibilityPassword;
+            $this->group->makeFileReadableOnlyByGroup($passwordR, $file);
         }
-        $modifyPassword = $request->modifyPassword;
-        if ($modifyPassword === null && $isThisApiRequest) {
-            $modifyPassword = bin2hex(random_bytes(8));
+        $passwordW = $request->modifyPassword;
+        if ($passwordW === null && $isThisApiRequest) {
+            $passwordW = bin2hex(random_bytes(8));
         }
-        $this->group->makeFileWritableOnlyByGroup($modifyPassword, $file);
+        $this->group->makeFileWritableOnlyByGroup($passwordW, $file);
 
-        return ($isThisApiRequest) ? $this->jsonResponseHelper->getSuccessfulResponseForUpload($modifyPassword, $fileId) :
+        return ($isThisApiRequest) ? $this->jsonResponseHelper->getSuccessfulResponseForUpload($passwordW, $fileId) :
             redirect(route("files.show", ["file" => $fileId]));
     }
 
@@ -110,7 +110,7 @@ class FileHosting extends Controller
         if ($user->canWrite() === false) {
             return $this->sendAuthenticationResponse($isThisApiRequest, $fileId);
         }
-        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->originalName, -1, PREG_SPLIT_NO_EMPTY)[0];
+        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $request->name, -1, PREG_SPLIT_NO_EMPTY)[0];
         $nameToSave = $originalName;
         $description = $request->description;
         $metadata = ($file->getDisk()->name === "public") ? compact("originalName", "nameToSave", "description") : compact("originalName", "description");

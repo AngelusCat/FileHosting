@@ -14,7 +14,7 @@ class JsonResponseHelper
     {
         $this->links = [
             'metadata' => "http://file/api/files/%d/metadata",
-            'auth' => "http://file/api/auth/%d",
+            'auth' => "http://file/api/auth/files/%d",
             'content' => "http://file/api/files/%d/content",
             'update' => "http://file/api/files/%d"
         ];
@@ -47,14 +47,14 @@ class JsonResponseHelper
     public function getSuccessfulResponseForShow(File $file): JsonResponse
     {
         $fileId = $file->getId();
-        $originalName = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
+        $name = preg_split('/\.[A-Za-z0-9]{1,4}/', $file->getOriginalName(), -1, PREG_SPLIT_NO_EMPTY)[0];
         $size = $file->getSize();
         $uploadDate = $file->getUploadDate();
         $description = $file->getDescription();
         $securityStatus = $file->getSecurityStatus()->value;
         return response()->json([
             'status' => ApiRequestStatus::success->name,
-            'data' => compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus') + ['links' => [
+            'data' => compact('name', 'size', 'uploadDate', 'description', 'securityStatus') + ['links' => [
                     'content' => sprintf($this->links['content'], $fileId),
                     'update' => sprintf($this->links['update'], $fileId)
                 ]]
@@ -74,12 +74,12 @@ class JsonResponseHelper
         ]);
     }
 
-    public function getSuccessfulResponseForUpload(string $modifyPassword, int $fileId): JsonResponse
+    public function getSuccessfulResponseForUpload(string $passwordW, int $fileId): JsonResponse
     {
         return response()->json([
             'status' => ApiRequestStatus::success->name,
             'data' => [
-                'modifyPassword' => $modifyPassword,
+                'modifyPassword' => $passwordW,
                 'links' => [
                     'metadata' => sprintf($this->links['metadata'], $fileId),
                     'content' => sprintf($this->links['content'], $fileId)

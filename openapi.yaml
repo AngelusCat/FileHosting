@@ -1,0 +1,427 @@
+openapi: "3.0.2"
+info:
+  title: "FileHosting API"
+  description: "API позволяет загружать файлы на сервер, получать их метаданные и содержимое после загрузки, а также изменять некоторые метаданные загруженного файла."
+  version: "1"
+servers:
+  - url: http://file/api/
+paths:
+  /files:
+    post:
+      requestBody: {
+        content: {
+          multipart/form-data: {
+            schema: {
+              type: "object",
+              properties: {
+                file: {
+                  description: "Загружаемый на сервер файл."
+                },
+                viewingStatus: {
+                  description: "Статус видимости файла. Поддерживается public (видно всем) и private (видно обладателю visibilityPassword).",
+                  type: "string"
+                },
+                visibilityPassword: {
+                  description: "Если статус видимости выбран как private, то необходимо передать visibilityPassword. Этот пароль будет использоваться для аутентификации и авторизации, чтобы получать метаданные и содержимое приватных файлов.",
+                  type: "string"
+                },
+                description: {
+                  description: "Описание загружаемого файла. Является необязательным полем.",
+                  type: "string"
+                }
+              }
+            }
+          }
+        }
+      }
+      responses: {
+        200: {
+          description: "Файл загружен на сервер.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "modifyPassword и HATEOAS",
+                    type: "object",
+                    properties: {
+                      modifyPassword: {
+                        description: "Используется, чтобы иметь право изменять метаданные файла.",
+                        type: "string"
+                      },
+                      links: {
+                        description: "HATEOAS",
+                        type: "object",
+                        properties: {
+                          metadata: {
+                            description: "URL, чтобы получить метаданные загруженного файла.",
+                            type: "string"
+                          },
+                          content: {
+                            description: "URL, чтобы получить содержимое загруженного файла.",
+                            type: "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  /files/{id}/metadata:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema: {
+            type: "integer"
+          }
+          required: true
+          description: "id загруженного файла."
+      responses: {
+        200: {
+          description: "Метаданные файла.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "Метаданные файла и HATEOAS.",
+                    type: "object",
+                    properties: {
+                      name: {
+                        description: "Имя файла.",
+                        type: "string"
+                      },
+                      size: {
+                        description: "Размер файла.",
+                        type: "integer"
+                      },
+                      uploadDate: {
+                        description: "Дата и время загрузки файла на сервер.",
+                        type: "string"
+                      },
+                      description: {
+                        description: "Описание файла.",
+                        type: "string"
+                      },
+                      securityStatus: {
+                        description: "Статус проверки файла антивирусом.",
+                        type: "string"
+                      }
+                    }
+                  },
+                  links: {
+                    description: "HATEOAS",
+                    type: "object",
+                    properties: {
+                      content: {
+                        description: "URL, чтобы получить содержимое файла.",
+                        type: "string"
+                      },
+                      update: {
+                        description: "URL, чтобы изменить метаданные файла.",
+                        type: "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        401: {
+          description: "URL, чтобы авторизоваться.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "Сообщение об ошибке и URL для авторизации.",
+                    type: "object",
+                    properties: {
+                      message: {
+                        description: "Сообщение об ошибке",
+                        type: "string"
+                      },
+                      links: {
+                        description: "URL, чтобы авторизоваться.",
+                        type: "object",
+                        properties: {
+                          auth: {
+                            description: "URL, чтобы авторизоваться.",
+                            type: "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  /files/{id}/content:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema: {
+            type: "integer"
+          }
+          required: true
+          description: "id загруженного файла."
+      responses: {
+        200: {
+          description: "Содержимое загруженного файла.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "Содержимое файла.",
+                    type: "object",
+                    properties: {
+                      content: {
+                        description: "Содержимое файла",
+                        type: "string"
+                      },
+                      links: {
+                        description: "HATEOAS",
+                        type: "object",
+                        properties: {
+                          metadata: {
+                            description: "URL, чтобы получить метаданные файла.",
+                            type: "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        401: {
+          description: "URL, чтобы авторизоваться.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "Сообщение об ошибке и URL для авторизации.",
+                    type: "object",
+                    properties: {
+                      message: {
+                        description: "Сообщение об ошибке",
+                        type: "string"
+                      },
+                      links: {
+                        description: "URL, чтобы авторизоваться.",
+                        type: "object",
+                        properties: {
+                          auth: {
+                            description: "URL, чтобы авторизоваться.",
+                            type: "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  /files/{id}:
+    post:
+      parameters:
+        - in: path
+          name: id
+          schema: {
+            type: "integer"
+          }
+          required: true
+          description: "id загруженного файла."
+      requestBody: {
+        content: {
+          application/x-www-form-urlencoded: {
+            schema: {
+              type: "object",
+              properties: {
+                name: {
+                  description: "Новое имя файла.",
+                  type: "string"
+                },
+                description: {
+                  description: "Новое описание файла.",
+                  type: "string"
+                },
+                _method: {
+                  description: "HTTP-метод.",
+                  type: "string",
+                  default: "PATCH"
+                }
+              }
+            }
+          }
+        }
+      }
+      responses: {
+        200: {
+          description: "Метаданные файла изменены.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "HATEOAS",
+                    type: "object",
+                    properties: {
+                      links: {
+                        description: "URL, чтобы получить метаданные файла.",
+                        type: "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        401: {
+          description: "URL, чтобы авторизоваться.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  data: {
+                    description: "Сообщение об ошибке и URL для авторизации.",
+                    type: "object",
+                    properties: {
+                      message: {
+                        description: "Сообщение об ошибке",
+                        type: "string"
+                      },
+                      links: {
+                        description: "URL, чтобы авторизоваться.",
+                        type: "object",
+                        properties: {
+                          auth: {
+                            description: "URL, чтобы авторизоваться.",
+                            type: "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  /auth/files/{id}:
+    post:
+      parameters:
+        - in: path
+          name: id
+          schema: {
+            type: "integer"
+          }
+          required: true
+          description: "id загруженного файла."
+      requestBody: {
+        content: {
+          application/x-www-form-urlencoded: {
+            schema: {
+              type: "object",
+              properties: {
+                password: {
+                  description: "Если передать visibilityPassword, то будет доступно только получение метаданных и содержимого файла. Если передать modifyPassword, то будет доступно получение метаданных, содержимого файла и изменение метаданных файла.",
+                  type: "string"
+                }
+              }
+            }
+          }
+        }
+      }
+      responses: {
+        200: {
+          description: "Пользователь успешно авторизован.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        401: {
+          description: "Произошла ошибка во время авторизации.",
+          content: {
+            application/json: {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    description: "Статус выполнения запроса.",
+                    type: "string"
+                  },
+                  message: {
+                    description: "Сообщение об ошибке.",
+                    type: "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }

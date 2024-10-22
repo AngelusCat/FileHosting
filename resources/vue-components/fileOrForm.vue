@@ -22,7 +22,7 @@
                 <input type="hidden" name="_token" :value="props.csrfToken" />
                 <input type="hidden" name="_method" value="PATCH">
             </form>
-        <h1>Файл - <input :value="props.originalName" name="originalName" form="form"></h1>
+        <h1>Файл - <input :value="props.originalName" name="name" form="form"></h1>
         <p>Размер: {{ props.size }}</p>
         <p>Дата загрузки: {{ props.uploadDate }}</p>
         <p>Описание: <input :value="props.description" name="description" form="form"></p>

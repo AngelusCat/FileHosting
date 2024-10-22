@@ -29,6 +29,8 @@ class AuthController extends Controller
             ":max" => 22
         ]);
 
+        $isThisApiRequest = $request->url() === route("api.auth", ['id' => $fileId]);
+
         $file = $this->simpleFactoryFile->createByDB($fileId);
 
         $enteredPassword = $request->input("password");
@@ -36,7 +38,7 @@ class AuthController extends Controller
         $cookie = $this->auth->authenticate($enteredPassword, $file);
 
         if ($cookie === null) {
-            if ($request->url() === route("api.auth", ['id' => $fileId])) {
+            if ($isThisApiRequest) {
                 return response()->json([
                     'status' => ApiRequestStatus::fail->name,
                     'message' => 'Пароль неверный'
@@ -45,7 +47,7 @@ class AuthController extends Controller
             return back()->withErrors(["Пароль неверный."]);
         }
 
-        if ($request->url() === route("api.auth", ['id' => $fileId])) {
+        if ($isThisApiRequest) {
             return response()->json([
                 'status' => ApiRequestStatus::success->name
             ])->cookie($cookie);
