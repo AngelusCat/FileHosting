@@ -79,13 +79,7 @@ paths:
   /files/{id}/metadata:
     get:
       parameters:
-        - in: path
-          name: id
-          schema: {
-            type: "integer"
-          }
-          required: true
-          description: "id загруженного файла."
+        - $ref: "#/components/parameters/FileIdParam"
       responses: {
         200: {
           description: "Метаданные файла.",
@@ -144,52 +138,13 @@ paths:
           }
         },
         401: {
-          description: "URL, чтобы авторизоваться.",
-          content: {
-            application/json: {
-              schema: {
-                type: "object",
-                properties: {
-                  status: {
-                    description: "Статус выполнения запроса.",
-                    type: "string"
-                  },
-                  data: {
-                    description: "Сообщение об ошибке и URL для авторизации.",
-                    type: "object",
-                    properties: {
-                      message: {
-                        description: "Сообщение об ошибке",
-                        type: "string"
-                      },
-                      links: {
-                        description: "URL, чтобы авторизоваться.",
-                        type: "object",
-                        properties: {
-                          auth: {
-                            description: "URL, чтобы авторизоваться.",
-                            type: "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          $ref: "#/components/responses/NotAuthorized"
         }
       }
   /files/{id}/content:
     get:
       parameters:
-        - in: path
-          name: id
-          schema: {
-            type: "integer"
-          }
-          required: true
-          description: "id загруженного файла."
+        - $ref: "#/components/parameters/FileIdParam"
       responses: {
         200: {
           description: "Содержимое загруженного файла.",
@@ -228,52 +183,13 @@ paths:
           }
         },
         401: {
-          description: "URL, чтобы авторизоваться.",
-          content: {
-            application/json: {
-              schema: {
-                type: "object",
-                properties: {
-                  status: {
-                    description: "Статус выполнения запроса.",
-                    type: "string"
-                  },
-                  data: {
-                    description: "Сообщение об ошибке и URL для авторизации.",
-                    type: "object",
-                    properties: {
-                      message: {
-                        description: "Сообщение об ошибке",
-                        type: "string"
-                      },
-                      links: {
-                        description: "URL, чтобы авторизоваться.",
-                        type: "object",
-                        properties: {
-                          auth: {
-                            description: "URL, чтобы авторизоваться.",
-                            type: "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          $ref: "#/components/responses/NotAuthorized"
         }
       }
   /files/{id}:
     post:
       parameters:
-        - in: path
-          name: id
-          schema: {
-            type: "integer"
-          }
-          required: true
-          description: "id загруженного файла."
+        - $ref: "#/components/parameters/FileIdParam"
       requestBody: {
         content: {
           application/x-www-form-urlencoded: {
@@ -326,52 +242,13 @@ paths:
           }
         },
         401: {
-          description: "URL, чтобы авторизоваться.",
-          content: {
-            application/json: {
-              schema: {
-                type: "object",
-                properties: {
-                  status: {
-                    description: "Статус выполнения запроса.",
-                    type: "string"
-                  },
-                  data: {
-                    description: "Сообщение об ошибке и URL для авторизации.",
-                    type: "object",
-                    properties: {
-                      message: {
-                        description: "Сообщение об ошибке",
-                        type: "string"
-                      },
-                      links: {
-                        description: "URL, чтобы авторизоваться.",
-                        type: "object",
-                        properties: {
-                          auth: {
-                            description: "URL, чтобы авторизоваться.",
-                            type: "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          $ref: "#/components/responses/NotAuthorized"
         }
       }
   /auth/files/{id}:
     post:
       parameters:
-        - in: path
-          name: id
-          schema: {
-            type: "integer"
-          }
-          required: true
-          description: "id загруженного файла."
+        - $ref: "#/components/parameters/FileIdParam"
       requestBody: {
         content: {
           application/x-www-form-urlencoded: {
@@ -425,3 +302,54 @@ paths:
           }
         }
       }
+components: {
+  parameters: {
+    FileIdParam: {
+      in: path,
+      name: id,
+      schema: {
+        type: "integer"
+      },
+      required: true,
+      description: "id загруженного файла."
+    }
+  },
+  responses: {
+    NotAuthorized: {
+      description: "URL, чтобы авторизоваться.",
+      content: {
+        application/json: {
+          schema: {
+            type: "object",
+            properties: {
+              status: {
+                description: "Статус выполнения запроса.",
+                type: "string"
+              },
+              data: {
+                description: "Сообщение об ошибке и URL для авторизации.",
+                type: "object",
+                properties: {
+                  message: {
+                    description: "Сообщение об ошибке",
+                    type: "string"
+                  },
+                  links: {
+                    description: "URL, чтобы авторизоваться.",
+                    type: "object",
+                    properties: {
+                      auth: {
+                        description: "URL, чтобы авторизоваться.",
+                        type: "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
