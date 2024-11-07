@@ -9,12 +9,23 @@
 
     let passwordShow = ref(false);
 
-    let result = ref("");
-
     function changeVisibility()
     {
-        //
+        let link = "http://file/w/" + props.fileId;
+        fetch(link).then(response => response.json()).then(function (text) {
+            if (text.isAuthorized) {
+                isFileBeingEdited.value = true;
+            } else {
+                passwordShow.value = true;
+            }
+        });
     }
+
+    function authorize(event)
+    {
+        event.preventDefault();
+    }
+
 
 </script>
 
@@ -42,9 +53,13 @@
         <a :href="props.downloadLink">Скачать файл</a><br><br>
         <button @click="changeVisibility">Редактировать</button>
         <div v-if="passwordShow">
-            <p>
-                Пароль: <input type="text" name="password">
-            </p>
+            <form method="post">
+                <input type="hidden" name="_token" :value="props.csrfToken" />
+                <p>
+                    Пароль: <input type="text" name="password">
+                </p>
+                <button type="submit" @click="authorize(event)">submit</button>
+            </form>
         </div>
     </div>
 </template>

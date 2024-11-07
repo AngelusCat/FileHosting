@@ -1,25 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
 </head>
 <body>
-    <form action="/testpost" method="post" enctype="multipart/form-data" id="form">
-        @csrf
-        <input type="file" name="file">
-        <input type="test" name="descr">
-        <button type="submit">submit!</button>
-        @if($errors->any())
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        @endif
-    </form>
+    @vite(['resources/js/app.js'])
+    <div id="app">
+        <viewing-or-editing></viewing-or-editing>
+    </div>
 </body>
 </html>
