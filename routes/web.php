@@ -29,7 +29,7 @@ Route::post('/{file}/checkPassword', [AuthController::class, 'checkPassword'])->
 
 Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("files.changeMetadata");
 
-Route::get('/authorized/{file}', [FetchRequestController::class, 'canCurrentUserChangeFileMetadata']);
+Route::get('/ajax/currentUserCanChangeFileMetadata/{file}', [FetchRequestController::class, 'canCurrentUserChangeFileMetadata']);
 
 Route::get('/test', function () {
     return view("test");

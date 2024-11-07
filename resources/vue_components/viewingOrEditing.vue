@@ -6,7 +6,7 @@ const test = ref("viewing");
 
 function askServerIfCurrentUserCanChangeFileMetadata()
 {
-    let response = fetch("http://file/authorized/" + fileId.value).then(text =>text.json()).then(example => console.log(example));
+    let response = fetch("http://file/ajax/currentUserCanChangeFileMetadata/" + fileId.value).then(text =>text.json()).then(example => console.log(example));
 }
 
 </script>
