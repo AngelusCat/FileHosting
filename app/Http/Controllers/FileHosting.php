@@ -184,102 +184,93 @@ class FileHosting extends Controller
 
     /**
      * @OA\PathItem(
-     *     path="/files/{id}/metadata",
-     *     @OA\Get(
-     *         summary="Получить метаданные файла: имя, размер (в байтах), дату загрузки, описание, статус проверки антивирусом",
-     *         operationId="getFileMetadata",
-     *         @OA\Parameter(
-     *             name="id",
-     *             in="path",
-     *             description="ID загруженного файла.",
-     *             required=true,
-     *             allowEmptyValue=false,
-     *             @OA\Schema(
-     *                 type="integer";
-     *             )
-     *         ),
-     *         @OA\Response(
-     *             response="200",
-     *             description="Метаданные загруженного файла.",
-     *             content={
-     *                 @OA\MediaType(
-     *                     mediaType="application/json",
-     *                     @OA\Schema(
-     *                         type="object",
-     *                         properties={
-     *                             @OA\Property(
-     *                                 property="status",
-     *                                 ref="#/components/schemas/Status"
-     *                             ),
-     *                             @OA\Property(
-     *                                 property="data",
-     *                                 type="object",
-     *                                 description="Полезная нагрузка ответа.",
-     *                                 properties={
-     *                                     @OA\Property(
-     *                                         property="name",
-     *                                         type="string",
-     *                                         description="Название файла."
-     *                                     ),
-     *                                     @OA\Property(
-     *                                         property="size",
-     *                                         type="integer",
-     *                                         description="Размер файла в байтах."
-     *                                     ),
-     *                                     @OA\Property(
-     *                                         property="uploadDate",
-     *                                         type="string",
-     *                                         format="date-time",
-     *                                         description="Дата и время загрузки файла."
-     *                                     ),
-     *                                     @OA\Property(
-     *                                         property="description",
-     *                                         type="string",
-     *                                         description="Описание содержимого файла."
-     *                                     ),
-     *                                     @OA\Property(
-     *                                         property="securityStatus",
-     *                                         type="string",
-     *                                         description="Статус проверки файла антивирусом.",
-     *                                         enum={"безопасный", "подозрительный", "вредоносный", "не проверен"}
-     *                                     ),
-     *                                     @OA\Property(
-     *                                         property="links",
-     *                                         type="object",
-     *                                         description="HATEOAS",
-     *                                         properties={
-     *                                             @OA\Property(
-     *                                                 property="content",
-     *                                                 ref="#/components/schemas/HATEOAS_Content"
-     *                                             ),
-     *                                             @OA\Property(
-     *                                                 property="update",
-     *                                                 type="string",
-     *                                                 description="URL, чтобы изменить некоторые метаданные файла."
-     *                                             )
-     *                                         }
-     *                                     )
-     *                                 }
-     *                             )
-     *                         }
-     *                     ),
-     *                     @OAResponse(
-     *                         response="401",
-     *                         content={
-     *                             @OA\MediaType(
-     *                                 mediaType="application/json",
-     *                                 @OA\Schema(
-     *                                     ref="#/components/schemas/UserIsNotAuthorized"
-     *                                 )
-     *                             )
-     *                         }
-     *                     )
-     *                 )
-     *             }
-     *         )
-     *     )
-     * )
-     */
+     *      path="/files/{id}/metadata",
+     *      @OA\Get(
+     *          summary="Получить метаданные файла: имя, размер (в байтах), дату загрузки, описание, статус проверки антивирусом",
+     *          operationId="getFileMetadata",
+     *          @OA\Parameter(
+     *              name="id",
+     *              in="path",
+     *              description="ID загруженного файла.",
+     *              required=true,
+     *              allowEmptyValue=false,
+     *              @OA\Schema(
+     *                  type="integer"
+     *              )
+     *          ),
+     *          @OA\Response(
+     *              response="200",
+     *              description="Метаданные загруженного файла.",
+     *              @OA\JsonContent(
+     *                  type="object",
+     *                  properties={
+     *                      @OA\Property(
+     *                          property="status",
+     *                          ref="#/components/schemas/Status"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="data",
+     *                          type="object",
+     *                          description="Полезная нагрузка ответа.",
+     *                          properties={
+     *                              @OA\Property(
+     *                                  property="name",
+     *                                  type="string",
+     *                                  description="Название файла."
+     *                              ),
+     *                              @OA\Property(
+     *                                  property="size",
+     *                                  type="integer",
+     *                                  description="Размер файла в байтах."
+     *                              ),
+     *                              @OA\Property(
+     *                                  property="uploadDate",
+     *                                  type="string",
+     *                                  format="date-time",
+     *                                  description="Дата и время загрузки файла."
+     *                              ),
+     *                              @OA\Property(
+     *                                  property="description",
+     *                                  type="string",
+     *                                  description="Описание содержимого файла."
+     *                              ),
+     *                              @OA\Property(
+     *                                  property="securityStatus",
+     *                                  type="string",
+     *                                  description="Статус проверки файла антивирусом.",
+     *                                  enum={"безопасный", "подозрительный", "вредоносный", "не проверен"}
+     *                              ),
+     *                              @OA\Property(
+     *                                  property="links",
+     *                                  type="object",
+     *                                  description="HATEOAS",
+     *                                  properties={
+     *                                      @OA\Property(
+     *                                          property="content",
+     *                                          ref="#/components/schemas/HATEOAS_Content"
+     *                                      ),
+     *                                      @OA\Property(
+     *                                          property="update",
+     *                                          type="string",
+     *                                          description="URL, чтобы изменить некоторые метаданные файла."
+     *                                      )
+     *                                  }
+     *                              )
+     *                          }
+     *                      )
+     *                  }
+     *              )
+     *          ),
+     *          @OA\Response(
+     *              response="401",
+     *              description="Пользователь не авторизован.",
+     *              @OA\JsonContent(
+     *                  ref="#/components/schemas/UserIsNotAuthorized"
+     *              )
+     *          )
+     *      )
+     *  )
+    */
 
     public function show(Request $request, int $fileId): View|RedirectResponse|JsonResponse
     {
