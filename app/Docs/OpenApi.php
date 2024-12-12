@@ -17,6 +17,20 @@ use OpenApi\Annotations as OA;
  *         description="Основной сервер FileHosting API"
  *     )
  * )
+ *
+ * @OA\Components(
+ *     @OA\Schema(
+ *         schema="Status",
+ *         type="string"
+ *         description="Статус выполнения запроса.",
+ *         enum={"success", "fail", "error"}
+ *     ),
+ *     @OA\Schema(
+ *         schema="HATEOAS_Content",
+ *         type="string",
+ *         description="URL, чтобы получить содержимое загруженного файла."
+ *     )
+ * )
  */
 
 class OpenApi
