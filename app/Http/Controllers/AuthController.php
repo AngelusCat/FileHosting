@@ -15,6 +15,19 @@ class AuthController extends Controller
     public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Auth $auth){}
 
     /**
+     * @OA\PathItem(
+     *     path="/auth/files/{id}",
+     *     @OA\Post(
+     *         summary="Аутентифицироваться и авторизоваться.",
+     *         operationId="auth",
+     *         @OA\RequestBody(
+     *             required=true,
+     *         )
+     *     )
+     * )
+     */
+
+    /**
      * @throws InvalidPayload
      */
     public function checkPassword(Request $request, int $fileId): RedirectResponse|JsonResponse
