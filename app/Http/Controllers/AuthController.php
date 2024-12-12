@@ -79,7 +79,11 @@ class AuthController extends Controller
      *             )
      *         ),
      *         @OA\Response(
-     *             //
+     *             response="401",
+     *             description="Пользователь не авторизован.",
+     *             @OA\JsonContent(
+     *                 ref="#/components/schemas/UserIsNotAuthorized"
+     *             )
      *         )
      *     )
      * )
@@ -113,7 +117,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => ApiRequestStatus::fail->name,
                     'message' => 'Пароль неверный'
-                ]);
+                ], 401);
             }
             return back()->withErrors(["Пароль неверный."]);
         }
