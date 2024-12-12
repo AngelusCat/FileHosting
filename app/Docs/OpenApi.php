@@ -31,6 +31,11 @@ use OpenApi\Annotations as OA;
  *         description="URL, чтобы получить содержимое загруженного файла."
  *     ),
  *     @OA\Schema(
+ *         schema="HATEOAS_Metadata",
+ *         type="string",
+ *         description="URL, чтобы получить метаданные загруженного файла."
+ *     ),
+ *     @OA\Schema(
  *         schema="UserIsNotAuthorized",
  *         type="object",
  *         description="Пользователь не аутентифицирован и не авторизован.",
@@ -62,6 +67,17 @@ use OpenApi\Annotations as OA;
  *                         }
  *                     )
  *                 }
+ *             ),
+ *             @OA\Parameter(
+ *               parameter="fileId",
+ *               name="id",
+ *               in="path",
+ *               description="ID загруженного файла.",
+ *               required=true,
+ *               allowEmptyValue=false,
+ *               @OA\Schema(
+ *                   type="integer"
+ *               )
  *             )
  *         }
  *     )

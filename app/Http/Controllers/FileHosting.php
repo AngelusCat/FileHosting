@@ -104,8 +104,7 @@ class FileHosting extends Controller
      *                                          properties={
      *                                              @OA\Property(
      *                                                  property="metadata",
-     *                                                  type="string",
-     *                                                  description="URL, чтобы получить метаданные загруженного файла."
+     *                                                  ref="#/components/schemas/HATEOAS_Metadata"
      *                                              ),
      *                                              @OA\Property(
      *                                                  property="content",
@@ -158,6 +157,55 @@ class FileHosting extends Controller
             redirect(route("files.show", ["file" => $fileId]));
     }
 
+    /**
+     * @OA\PathItem(
+     *      path="/files/{id}/content",
+     *      @OA\Get(
+     *          summary="Получить содержимое файла.",
+     *          operationId="getFileContent",
+     *          @OA\Parameter(ref="#/components/parameters/fileId"),
+     *          @OA\Response(
+     *              response="200",
+     *              description="Содержимое файла.",
+     *              @OA\JsonContent(
+     *                  type="object",
+     *                  properties={
+     *                      @OA\Property(
+     *                          property="status",
+     *                          ref="#/components/schemas/Status"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="data",
+     *                          type="object",
+     *                          description="Полезная нагрузка ответа.",
+     *                          properties={
+     *                              @OA\Property(
+     *                                  property="links",
+     *                                  type="object",
+     *                                  description="HATEOAS ссылки для ресурса.",
+     *                                  properties={
+     *                                      @OA\Property(
+     *                                          property="metadata",
+     *                                          ref="#/components/schemas/HATEOAS_Metadata"
+     *                                      )
+     *                                  }
+     *                              )
+     *                          }
+     *                      )
+     *                  }
+     *              )
+     *          ),
+     *          @OA\Response(
+     *              response="401",
+     *              description="Пользователь не авторизован.",
+     *              @OA\JsonContent(
+     *                  ref="#/components/schemas/UserIsNotAuthorized"
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
     public function download(Request $request, int $fileId): BinaryFileResponse|RedirectResponse|JsonResponse
     {
         $isThisApiRequest = $request->url() === route("api.files.content", ['id' => $fileId]);
@@ -188,16 +236,7 @@ class FileHosting extends Controller
      *      @OA\Get(
      *          summary="Получить метаданные файла: имя, размер (в байтах), дату загрузки, описание, статус проверки антивирусом",
      *          operationId="getFileMetadata",
-     *          @OA\Parameter(
-     *              name="id",
-     *              in="path",
-     *              description="ID загруженного файла.",
-     *              required=true,
-     *              allowEmptyValue=false,
-     *              @OA\Schema(
-     *                  type="integer"
-     *              )
-     *          ),
+     *          @OA\Parameter(ref="#/components/parameters/fileId"),
      *          @OA\Response(
      *              response="200",
      *              description="Метаданные загруженного файла.",
