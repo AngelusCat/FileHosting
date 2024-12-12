@@ -22,6 +22,64 @@ class AuthController extends Controller
      *         operationId="auth",
      *         @OA\RequestBody(
      *             required=true,
+     *             @OA\MediaType(
+     *                 mediaType="multipart/form-data",
+     *                 @OA\Schema(
+     *                     type="object",
+     *                     properties={
+     *                         @OA\Property(
+     *                             property="password",
+     *                             type="string",
+     *                             required=true,
+     *                             nullable=false,
+     *                             description="Если viewingStatus = private и нужно дать только права на чтение, то ввести visibilityPassword; дать права на чтение и запись - modifyPassword.",
+     *                             minLength=8,
+     *                             maxLength=22,
+     *                             pattern="[a-zA-Z0-9!@#$%\^&*\(\)\-—_+=;:,\.\/?\\|`~\[\]{}]+"
+     *                         )
+     *                     }
+     *                 )
+     *             )
+     *         ),
+     *         @OA\Response(
+     *             response="200",
+     *             description="Пользователь аутентифицирован и авторизован."
+     *             @OA\JsonContent(
+     *                 type="object",
+     *                 properties={
+     *                     @OA\Property(
+     *                         property="status",
+     *                         ref="#/components/schemas/Status"
+     *                     )
+     *                 }
+     *             )
+     *         ),
+     *         @OA\Response(
+     *             response="422",
+     *             description="Ошибки валидации входных данных.",
+     *             @OA\JsonContent(
+     *                 type="object",
+     *                 properties={
+     *                     @OA\Property(
+     *                         property="message",
+     *                         type="string"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="errors",
+     *                         type="object",
+     *                         description="Ошибки валидации.",
+     *                         properties={
+     *                             @OA\Property(
+     *                                 property="Название поля, не прошедшее проверку валидации.",
+     *                                 type="string"
+     *                             )
+     *                         }
+     *                     )
+     *                 }
+     *             )
+     *         ),
+     *         @OA\Response(
+     *             //
      *         )
      *     )
      * )
