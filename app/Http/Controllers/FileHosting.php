@@ -19,10 +19,114 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Random\RandomException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use OpenApi\Annotations as OA;
 
 class FileHosting extends Controller
 {
     public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Group $group, private JsonResponseHelper $jsonResponseHelper){}
+
+    /**
+     * @OA\PathItem(
+     *      path="/files"
+     *      @OA\Post(
+     *          summary="Загрузить файл на сервер.",
+     *          operationId="uploadFile",
+     *          @OA\RequestBody(
+     *              required=true,
+     *              @OA\MediaType(
+     *                  mediaType="multipart/form-data",
+     *                  @OA\Schema(
+     *                      type="object",
+     *                      properties={
+     *                          @OA\Property(
+     *                              property="file",
+     *                              type="string",
+     *                              description="Содержимое загружаемого файла на сервер. Размер файла должен быть от 1кб до 5мб.",
+     *                              format="binary",
+     *                              required=true
+     *                          ),
+     *                          @OA\Property(
+     *                              property="description",
+     *                              type="string",
+     *                              description="Описание что из себя представляет загружаемый файл.",
+     *                              required=false,
+     *                              maxLength=1668,
+     *                              pattern="^[a-zA-Zа-яёА-ЯЁ0-9\.,;:!?\-—\(\)\"\" ]+$"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="viewingStatus",
+     *                              type="string",
+     *                              description="Статус видимости файла. Файл может быть публичным (любой пользователь может перейти по ссылке и посмотреть его метаданные) и приватным (метаданные файла может смотреть только тот, у кого есть права на чтение).",
+     *                              required=true,
+     *                              example="public",
+     *                              enum={"public", "private"}
+     *                          ),
+     *                          @OA\Property(
+     *                              property="visibilityPassword",
+     *                              type="string",
+     *                              required=false,
+     *                              description="Этот пароль дает только право на чтение. Его нужно передавать только в случае, если viewingStatus=private.",
+     *                              minLength=8,
+     *                              maxLength=22,
+     *                              pattern="[a-zA-Z0-9!@#$%\^&*\(\)\-—_+=;:,\.\/?\\|`~\[\]{}]+"
+     *                          )
+     *                      }
+     *                  )
+     *              )
+     *          ),
+     *          @OA\Response(
+     *              response="200",
+     *              description="Файл загружен на сервер",
+     *              content={
+     *                  @OA\MediaType(
+     *                      mediaType="application/json",
+     *                      @OA\Schema(
+     *                          type="object",
+     *                          properties={
+     *                              @OA\Property(
+     *                                  property="status",
+     *                                  type="string"
+     *                                  description="Статус выполнения запроса.",
+     *                                  enum={"success", "fail", "error"}
+     *                              ),
+     *                              @OA\Property(
+     *                                  property="data",
+     *                                  type="object",
+     *                                  description="Полезная нагрузка ответа.",
+     *                                  properties={
+     *                                      @OA\Property(
+     *                                          property="modifyPassword",
+     *                                          type="string",
+     *                                          description="Этот пароль дает право на чтение и на запись (изменение метаданных файла)."
+     *                                      ),
+     *                                      @OA\Property(
+     *                                          property="links",
+     *                                          type="object",
+     *                                          description="HATEOAS",
+     *                                          properties={
+     *                                              @OA\Property(
+     *                                                  property="metadata",
+     *                                                  type="string",
+     *                                                  description="URL, чтобы получить метаданные загруженного файла."
+     *                                              ),
+     *                                              @OA\Property(
+     *                                                  property="content",
+     *                                                  type="string",
+     *                                                  description="URL, чтобы получить содержимое загруженного файла."
+     *                                              )
+     *                                          }
+     *                                      )
+     *                                  }
+     *                              )
+     *                          }
+     *                      )
+     *                  )
+     *              }
+     *          )
+     *      )
+     *  )
+     * /
+     */
 
     /**
      * @throws RandomException
@@ -80,6 +184,16 @@ class FileHosting extends Controller
         return ($file->deleteAfterDownloading()) ? response()->download($path, null, $headers)->deleteFileAfterSend(true)
             : response()->download($path, null, $headers);
     }
+
+    /**
+     * @OA\PathItem(
+     *     path="/files/{id}/metadata",
+     *     @OA\Get(
+     *         summary="Получить метаданные файла ()
+     *         operationId="getFileMetadata"
+     *     )
+     * )
+     */
 
     public function show(Request $request, int $fileId): View|RedirectResponse|JsonResponse
     {
