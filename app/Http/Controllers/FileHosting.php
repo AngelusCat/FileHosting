@@ -199,7 +199,7 @@ class FileHosting extends Controller
      *             )
      *         ),
      *         @OA\Response(
-     *             response:"200",
+     *             response="200",
      *             description="Метаданные загруженного файла.",
      *             content={
      *                 @OA\MediaType(
@@ -253,11 +253,24 @@ class FileHosting extends Controller
      *                                                 ref="#/components/schemas/HATEOAS_Content"
      *                                             ),
      *                                             @OA\Property(
-     *                                                 //
+     *                                                 property="update",
+     *                                                 type="string",
+     *                                                 description="URL, чтобы изменить некоторые метаданные файла."
      *                                             )
      *                                         }
      *                                     )
      *                                 }
+     *                             )
+     *                         }
+     *                     ),
+     *                     @OAResponse(
+     *                         response="401",
+     *                         content={
+     *                             @OA\MediaType(
+     *                                 mediaType="application/json",
+     *                                 @OA\Schema(
+     *                                     ref="#/components/schemas/UserIsNotAuthorized"
+     *                                 )
      *                             )
      *                         }
      *                     )

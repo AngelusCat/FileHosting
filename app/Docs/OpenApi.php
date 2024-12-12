@@ -29,6 +29,41 @@ use OpenApi\Annotations as OA;
  *         schema="HATEOAS_Content",
  *         type="string",
  *         description="URL, чтобы получить содержимое загруженного файла."
+ *     ),
+ *     @OA\Schema(
+ *         schema="UserIsNotAuthorized",
+ *         type="object",
+ *         description="Пользователь не аутентифицирован и не авторизован.",
+ *         properties={
+ *             @OA\Property(
+ *                 property="status",
+ *                 ref="#/components/schemas/Status"
+ *             ),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 description="Полезная нагрузка ответа.",
+ *                 properties={
+ *                     @OA\Property(
+ *                         property="message",
+ *                         type="string",
+ *                         description="Сообщение об ошибке аутентификации и авторизации."
+ *                     ),
+ *                     @OA\Property(
+ *                         property="links,
+ *                         type="object",
+ *                         description="HATEOAS",
+ *                         properties={
+ *                             @OA\Property(
+ *                                 property="auth",
+ *                                 type="string",
+ *                                 description="URL, чтобы аутентифицироваться и авторизоваться."
+ *                             )
+ *                         }
+ *                     )
+ *                 }
+ *             )
+ *         }
  *     )
  * )
  */
