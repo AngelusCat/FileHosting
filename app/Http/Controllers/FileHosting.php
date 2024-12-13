@@ -329,6 +329,38 @@ class FileHosting extends Controller
             view('showEditDelete', compact('originalName', 'size', 'uploadDate', 'description', 'securityStatus', 'downloadLink', 'csrfToken', 'fileId'));
     }
 
+    /**
+     * @OA\PathItem(
+     *     path="/files/{id}",
+     *     @OA\Post(
+     *         summary="Изменить имя и описание к файлу."
+     *         operationId="changeMetadata",
+     *         @OA\Parameter(ref="#/components/parameters/fileId"),
+     *         @OA\RequestBody(
+     *             required=true,
+     *             @OA\MediaType(
+     *                 mediaType="multipart/form-data",
+     *                 @OA\Schema(
+     *                     type="object",
+     *                     properties={
+     *                         @OA\Property(
+     *                             property="name",
+     *                             type="string",
+     *                             description="Новое имя загруженного файла без расширения."
+     *                         ),
+     *                         @OA\Property(
+     *                             property="description",
+     *                             type="string",
+     *                             description="Новое описание к загруженному файлу."
+     *                         )
+     *                     }
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
+
     public function changeMetadata(Request $request, int $fileId): RedirectResponse|JsonResponse
     {
         $isThisApiRequest = $request->url() === route("api.files.update", ['id' => $fileId]);

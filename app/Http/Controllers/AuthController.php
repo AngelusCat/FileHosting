@@ -20,6 +20,7 @@ class AuthController extends Controller
      *     @OA\Post(
      *         summary="Аутентифицироваться и авторизоваться.",
      *         operationId="auth",
+     *         @OA\Parameter(ref="#/components/parameters/fileId"),
      *         @OA\RequestBody(
      *             required=true,
      *             @OA\MediaType(
