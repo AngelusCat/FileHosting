@@ -118,6 +118,10 @@ class FileHosting extends Controller
      *                      )
      *                  )
      *              }
+     *          ),
+     *          @OA\Response(
+     *              response="422",
+     *              ref="#/components/responses/ValidationErrorResponse"
      *          )
      *      )
      *  )
@@ -197,10 +201,7 @@ class FileHosting extends Controller
      *          ),
      *          @OA\Response(
      *              response="401",
-     *              description="Пользователь не авторизован.",
-     *              @OA\JsonContent(
-     *                  ref="#/components/schemas/UserIsNotAuthorized"
-     *              )
+     *              ref="#/components/responses/UserIsNotAuthorized"
      *          )
      *      )
      *  )
@@ -302,14 +303,11 @@ class FileHosting extends Controller
      *          ),
      *          @OA\Response(
      *              response="401",
-     *              description="Пользователь не авторизован.",
-     *              @OA\JsonContent(
-     *                  ref="#/components/schemas/UserIsNotAuthorized"
-     *              )
+     *              ref="#/components/responses/UserIsNotAuthorized"
      *          )
      *      )
      *  )
-    */
+     */
 
     public function show(Request $request, int $fileId): View|RedirectResponse|JsonResponse
     {

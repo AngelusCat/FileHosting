@@ -59,41 +59,67 @@ use OpenApi\Annotations as OA;
  *              }
  *          )
  *      ),
- *      @OA\Schema(
- *          schema="UserIsNotAuthorized",
- *          type="object",
- *          description="Пользователь не аутентифицирован и не авторизован.",
- *          properties={
- *              @OA\Property(
- *                  property="status",
- *                  ref="#/components/schemas/Status"
- *              ),
- *              @OA\Property(
- *                  property="data",
- *                  type="object",
- *                  description="Полезная нагрузка ответа.",
- *                  properties={
- *                      @OA\Property(
- *                          property="message",
- *                          type="string",
- *                          description="Сообщение об ошибке аутентификации и авторизации."
- *                      ),
- *                      @OA\Property(
- *                          property="links",
- *                          type="object",
- *                          description="HATEOAS",
- *                          properties={
- *                              @OA\Property(
- *                                  property="auth",
- *                                  type="string",
- *                                  description="URL, чтобы аутентифицироваться и авторизоваться."
- *                              )
- *                          }
- *                      )
- *                  }
- *              )
- *          }
- *      ),
+ *     @OA\Response(
+ *         response="UserIsNotAuthorized",
+ *         description="Пользователь не аутентифицирован и не авторизован.",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             properties={
+ *                 @OA\Property(
+ *                     property="status",
+ *                     ref="#/components/schemas/Status"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="data",
+ *                     type="object",
+ *                     description="Полезная нагрузка ответа.",
+ *                     properties={
+ *                         @OA\Property(
+ *                             property="message",
+ *                             type="string",
+ *                             description="Сообщение об ошибке аутентификации и авторизации."
+ *                         ),
+ *                         @OA\Property(
+ *                             property="links",
+ *                             type="object",
+ *                             description="HATEOAS",
+ *                             properties={
+ *                                 @OA\Property(
+ *                                     property="auth",
+ *                                     type="string",
+ *                                     description="URL, чтобы аутентифицироваться и авторизоваться."
+ *                                 )
+ *                             }
+ *                         )
+ *                     }
+ *                 )
+ *             }
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response="ValidationErrorResponse",
+ *         description="Ошибки валидации входных данных.",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             properties={
+ *                 @OA\Property(
+ *                     property="message",
+ *                     type="string"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="errors",
+ *                     type="object",
+ *                     description="Ошибки валидации.",
+ *                     properties={
+ *                         @OA\Property(
+ *                             property="Название поля, не прошедшее проверку валидации.",
+ *                             type="string"
+ *                         )
+ *                     }
+ *                 )
+ *             }
+ *         )
+ *     ),
  *      @OA\Parameter(
  *          parameter="fileId",
  *          name="id",

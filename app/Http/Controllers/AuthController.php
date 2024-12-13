@@ -56,34 +56,11 @@ class AuthController extends Controller
      *         ),
      *         @OA\Response(
      *             response="422",
-     *             description="Ошибки валидации входных данных.",
-     *             @OA\JsonContent(
-     *                 type="object",
-     *                 properties={
-     *                     @OA\Property(
-     *                         property="message",
-     *                         type="string"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="errors",
-     *                         type="object",
-     *                         description="Ошибки валидации.",
-     *                         properties={
-     *                             @OA\Property(
-     *                                 property="Название поля, не прошедшее проверку валидации.",
-     *                                 type="string"
-     *                             )
-     *                         }
-     *                     )
-     *                 }
-     *             )
+     *             ref="#/components/responses/ValidationErrorResponse"
      *         ),
      *         @OA\Response(
      *             response="401",
-     *             description="Пользователь не авторизован.",
-     *             @OA\JsonContent(
-     *                 ref="#/components/schemas/UserIsNotAuthorized"
-     *             )
+     *             ref="#/components/responses/UserIsNotAuthorized"
      *         )
      *     )
      * )
