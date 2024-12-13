@@ -18,7 +18,7 @@ class JWTAuth
             "typ" => "JWT"
         ]);
         $this->alg = json_decode($this->header, true)["alg"];
-        $this->secret = env('JWT_SECRET');
+        $this->secret = config('services.jwt.jwt_secret');
     }
 
     /**

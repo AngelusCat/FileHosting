@@ -6,7 +6,7 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\OpenApi(
- *      openapi="3.0.2",
+ *      openapi="3.1.0",
  *      @OA\Info(
  *          title="FileHosting API",
  *          version="1.0",
@@ -34,30 +34,6 @@ use OpenApi\Annotations as OA;
  *          schema="HATEOAS_Metadata",
  *          type="string",
  *          description="URL, чтобы получить метаданные загруженного файла."
- *      ),
- *      @OA\Response(
- *          response="422",
- *          description="Ошибки валидации входных данных.",
- *          @OA\JsonContent(
- *              type="object",
- *              properties={
- *                  @OA\Property(
- *                      property="message",
- *                      type="string"
- *                  ),
- *                  @OA\Property(
- *                      property="errors",
- *                      type="object",
- *                      description="Ошибки валидации.",
- *                      properties={
- *                          @OA\Property(
- *                              property="Название поля, не прошедшее проверку валидации.",
- *                              type="string"
- *                          )
- *                      }
- *                  )
- *              }
- *          )
  *      ),
  *     @OA\Response(
  *         response="UserIsNotAuthorized",
@@ -133,7 +109,6 @@ use OpenApi\Annotations as OA;
  *      )
  *  )
  */
-
 class OpenApi
 {
 

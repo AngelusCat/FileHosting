@@ -15,7 +15,7 @@ class VirusTotal implements Antivirus
 
     public function __construct()
     {
-        $this->apiKey = env('VIRUS_TOTAL_API_KEY');
+        $this->apiKey = config('services.virus_total.api_key');
     }
 
     public function getSecurityStatus(string $fileName, string $fileContent): SecurityStatus

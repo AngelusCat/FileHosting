@@ -30,5 +30,10 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'virus_total' => [
+        'api_key' => env('VIRUS_TOTAL_API_KEY'),
+    ],
+    'jwt' => [
+        'jwt_secret' => env('JWT_SECRET'),
+    ]
 ];

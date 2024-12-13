@@ -1,0 +1,440 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "FileHosting API",
+        "description": "API позволяет загружать файлы на сервер, получать их метаданные и содержимое после загрузки, а также изменять некоторые метаданные загруженного файла.",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://file/api/",
+            "description": "Основной сервер FileHosting API"
+        }
+    ],
+    "paths": {
+        "/auth/files/{id}": {
+            "post": {
+                "summary": "Аутентифицироваться и авторизоваться.",
+                "operationId": "auth",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/fileId"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "password": {
+                                        "description": "Если viewingStatus = private и нужно дать только права на чтение, то ввести visibilityPassword; дать права на чтение и запись - modifyPassword.",
+                                        "type": "string",
+                                        "maxLength": 22,
+                                        "minLength": 8,
+                                        "pattern": "[a-zA-Z0-9!@#$%\\^&*\\(\\)\\-—_+=;:,\\.\\/?\\\\|`~\\[\\]{}]+"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Пользователь аутентифицирован и авторизован.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "$ref": "#/components/schemas/Status"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationErrorResponse"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UserIsNotAuthorized"
+                    }
+                }
+            }
+        },
+        "/files": {
+            "post": {
+                "summary": "Загрузить файл на сервер.",
+                "operationId": "uploadFile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "Содержимое загружаемого файла на сервер. Размер файла должен быть от 1кб до 5мб.",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "description": {
+                                        "description": "Описание что из себя представляет загружаемый файл.",
+                                        "type": "string",
+                                        "maxLength": 1668,
+                                        "pattern": "^[a-zA-Zа-яёА-ЯЁ0-9.,;:!?\\\\-—() ]+$"
+                                    },
+                                    "viewingStatus": {
+                                        "description": "Статус видимости файла. Файл может быть публичным (любой пользователь может перейти по ссылке и посмотреть его метаданные) и приватным (метаданные файла может смотреть только тот, у кого есть права на чтение).",
+                                        "type": "string",
+                                        "enum": [
+                                            "public",
+                                            "private"
+                                        ],
+                                        "example": "public"
+                                    },
+                                    "visibilityPassword": {
+                                        "description": "Этот пароль дает только право на чтение. Его нужно передавать только в случае, если viewingStatus=private.",
+                                        "type": "string",
+                                        "maxLength": 22,
+                                        "minLength": 8,
+                                        "pattern": "[a-zA-Z0-9!@#$%\\^&*\\(\\)\\-—_+=;:,\\.\\/?\\\\|`~\\[\\]{}]+"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Файл загружен на сервер",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "$ref": "#/components/schemas/Status"
+                                        },
+                                        "data": {
+                                            "description": "Полезная нагрузка ответа.",
+                                            "properties": {
+                                                "modifyPassword": {
+                                                    "description": "Этот пароль дает право на чтение и на запись (изменение метаданных файла).",
+                                                    "type": "string"
+                                                },
+                                                "links": {
+                                                    "description": "HATEOAS",
+                                                    "properties": {
+                                                        "metadata": {
+                                                            "$ref": "#/components/schemas/HATEOAS_Metadata"
+                                                        },
+                                                        "content": {
+                                                            "$ref": "#/components/schemas/HATEOAS_Content"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationErrorResponse"
+                    }
+                }
+            }
+        },
+        "/files/{id}/content": {
+            "get": {
+                "summary": "Получить содержимое файла.",
+                "operationId": "getFileContent",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/fileId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Содержимое файла.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "$ref": "#/components/schemas/Status"
+                                        },
+                                        "data": {
+                                            "description": "Полезная нагрузка ответа.",
+                                            "properties": {
+                                                "links": {
+                                                    "description": "HATEOAS ссылки для ресурса.",
+                                                    "properties": {
+                                                        "metadata": {
+                                                            "$ref": "#/components/schemas/HATEOAS_Metadata"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UserIsNotAuthorized"
+                    }
+                }
+            }
+        },
+        "/files/{id}/metadata": {
+            "get": {
+                "summary": "Получить метаданные файла: имя, размер (в байтах), дату загрузки, описание, статус проверки антивирусом",
+                "operationId": "getFileMetadata",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/fileId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Метаданные загруженного файла.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "$ref": "#/components/schemas/Status"
+                                        },
+                                        "data": {
+                                            "description": "Полезная нагрузка ответа.",
+                                            "properties": {
+                                                "name": {
+                                                    "description": "Название файла.",
+                                                    "type": "string"
+                                                },
+                                                "size": {
+                                                    "description": "Размер файла в байтах.",
+                                                    "type": "integer"
+                                                },
+                                                "uploadDate": {
+                                                    "description": "Дата и время загрузки файла.",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "description": {
+                                                    "description": "Описание содержимого файла.",
+                                                    "type": "string"
+                                                },
+                                                "securityStatus": {
+                                                    "description": "Статус проверки файла антивирусом.",
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "безопасный",
+                                                        "подозрительный",
+                                                        "вредоносный",
+                                                        "не проверен"
+                                                    ]
+                                                },
+                                                "links": {
+                                                    "description": "HATEOAS",
+                                                    "properties": {
+                                                        "content": {
+                                                            "$ref": "#/components/schemas/HATEOAS_Content"
+                                                        },
+                                                        "update": {
+                                                            "description": "URL, чтобы изменить некоторые метаданные файла.",
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UserIsNotAuthorized"
+                    }
+                }
+            }
+        },
+        "/files/{id}": {
+            "post": {
+                "summary": "Изменить имя и описание к файлу.",
+                "operationId": "changeMetadata",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/fileId"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Новое имя загруженного файла без расширения.",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Новое описание к загруженному файлу.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Метаданные файла успешно изменены.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "$ref": "#/components/schemas/Status"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "links": {
+                                                    "properties": {
+                                                        "metadata": {
+                                                            "$ref": "#/components/schemas/HATEOAS_Metadata"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationErrorResponse"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UserIsNotAuthorized"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Status": {
+                "description": "Статус выполнения запроса.",
+                "type": "string",
+                "enum": [
+                    "success",
+                    "fail",
+                    "error"
+                ]
+            },
+            "HATEOAS_Content": {
+                "description": "URL, чтобы получить содержимое загруженного файла.",
+                "type": "string"
+            },
+            "HATEOAS_Metadata": {
+                "description": "URL, чтобы получить метаданные загруженного файла.",
+                "type": "string"
+            }
+        },
+        "responses": {
+            "UserIsNotAuthorized": {
+                "description": "Пользователь не аутентифицирован и не авторизован.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "$ref": "#/components/schemas/Status"
+                                },
+                                "data": {
+                                    "description": "Полезная нагрузка ответа.",
+                                    "properties": {
+                                        "message": {
+                                            "description": "Сообщение об ошибке аутентификации и авторизации.",
+                                            "type": "string"
+                                        },
+                                        "links": {
+                                            "description": "HATEOAS",
+                                            "properties": {
+                                                "auth": {
+                                                    "description": "URL, чтобы аутентифицироваться и авторизоваться.",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "ValidationErrorResponse": {
+                "description": "Ошибки валидации входных данных.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "errors": {
+                                    "description": "Ошибки валидации.",
+                                    "properties": {
+                                        "Название поля, не прошедшее проверку валидации.": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "fileId": {
+                "name": "id",
+                "in": "path",
+                "description": "ID загруженного файла.",
+                "required": true,
+                "allowEmptyValue": false,
+                "schema": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

@@ -32,5 +32,6 @@ Route::patch('/files/{file}', [FileHosting::class, 'changeMetadata'])->name("fil
 Route::get('/ajax/currentUserCanChangeFileMetadata/{file}', [FetchRequestController::class, 'canCurrentUserChangeFileMetadata']);
 
 Route::get('/test', function () {
-    return view("test");
+    //return view("test");
+    dump(env('VIRUS_TOTAL_API_KEY'));
 });

@@ -26,8 +26,12 @@ class FileHosting extends Controller
     public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Group $group, private JsonResponseHelper $jsonResponseHelper){}
 
     /**
+     * @throws RandomException
+     * @throws UploadedFileIsNotValid
+     */
+    /**
      * @OA\PathItem(
-     *      path="/files"
+     *      path="/files",
      *      @OA\Post(
      *          summary="Загрузить файл на сервер.",
      *          operationId="uploadFile",
@@ -43,28 +47,24 @@ class FileHosting extends Controller
      *                              type="string",
      *                              description="Содержимое загружаемого файла на сервер. Размер файла должен быть от 1кб до 5мб.",
      *                              format="binary",
-     *                              required=true
      *                          ),
      *                          @OA\Property(
      *                              property="description",
      *                              type="string",
      *                              description="Описание что из себя представляет загружаемый файл.",
-     *                              required=false,
      *                              maxLength=1668,
-     *                              pattern="^[a-zA-Zа-яёА-ЯЁ0-9\.,;:!?\-—\(\)\"\" ]+$"
+     *                              pattern="^[a-zA-Zа-яёА-ЯЁ0-9.,;:!?\\-—() ]+$"
      *                          ),
      *                          @OA\Property(
      *                              property="viewingStatus",
      *                              type="string",
      *                              description="Статус видимости файла. Файл может быть публичным (любой пользователь может перейти по ссылке и посмотреть его метаданные) и приватным (метаданные файла может смотреть только тот, у кого есть права на чтение).",
-     *                              required=true,
      *                              example="public",
      *                              enum={"public", "private"}
      *                          ),
      *                          @OA\Property(
      *                              property="visibilityPassword",
      *                              type="string",
-     *                              required=false,
      *                              description="Этот пароль дает только право на чтение. Его нужно передавать только в случае, если viewingStatus=private.",
      *                              minLength=8,
      *                              maxLength=22,
@@ -126,11 +126,6 @@ class FileHosting extends Controller
      *      )
      *  )
      * /
-     */
-
-    /**
-     * @throws RandomException
-     * @throws UploadedFileIsNotValid
      */
     public function upload(Request $request): JsonResponse|RedirectResponse
     {
@@ -206,7 +201,6 @@ class FileHosting extends Controller
      *      )
      *  )
      */
-
     public function download(Request $request, int $fileId): BinaryFileResponse|RedirectResponse|JsonResponse
     {
         $isThisApiRequest = $request->url() === route("api.files.content", ['id' => $fileId]);
@@ -308,7 +302,6 @@ class FileHosting extends Controller
      *      )
      *  )
      */
-
     public function show(Request $request, int $fileId): View|RedirectResponse|JsonResponse
     {
         $isThisApiRequest = $request->url() === route("api.files.metadata", ['id' => $fileId]);
@@ -333,7 +326,7 @@ class FileHosting extends Controller
      * @OA\PathItem(
      *     path="/files/{id}",
      *     @OA\Post(
-     *         summary="Изменить имя и описание к файлу."
+     *         summary="Изменить имя и описание к файлу.",
      *         operationId="changeMetadata",
      *         @OA\Parameter(ref="#/components/parameters/fileId"),
      *         @OA\RequestBody(
@@ -356,11 +349,47 @@ class FileHosting extends Controller
      *                     }
      *                 )
      *             )
+     *         ),
+     *         @OA\Response(
+     *             response="200",
+     *             description="Метаданные файла успешно изменены.",
+     *             @OA\JsonContent(
+     *                 type="object",
+     *                 properties={
+     *                     @OA\Property(
+     *                         property="status",
+     *                         ref="#/components/schemas/Status"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="data",
+     *                         type="object",
+     *                         properties={
+     *                             @OA\Property(
+     *                                 property="links",
+     *                                 type="object",
+     *                                 properties={
+     *                                     @OA\Property(
+     *                                         property="metadata",
+     *                                         ref="#/components/schemas/HATEOAS_Metadata"
+     *                                     )
+     *                                 }
+     *                             )
+     *                         }
+     *                     )
+     *                 }
+     *             )
+     *         ),
+     *         @OA\Response(
+     *             response="422",
+     *             ref="#/components/responses/ValidationErrorResponse"
+     *         ),
+     *         @OA\Response(
+     *             response="401",
+     *             ref="#/components/responses/UserIsNotAuthorized"
      *         )
      *     )
      * )
      */
-
     public function changeMetadata(Request $request, int $fileId): RedirectResponse|JsonResponse
     {
         $isThisApiRequest = $request->url() === route("api.files.update", ['id' => $fileId]);

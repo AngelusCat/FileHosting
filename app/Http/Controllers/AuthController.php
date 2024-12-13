@@ -9,11 +9,15 @@ use App\Services\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
     public function __construct(private SimpleFactoryFile $simpleFactoryFile, private Auth $auth){}
 
+    /**
+     * @throws InvalidPayload
+     */
     /**
      * @OA\PathItem(
      *     path="/auth/files/{id}",
@@ -31,8 +35,7 @@ class AuthController extends Controller
      *                         @OA\Property(
      *                             property="password",
      *                             type="string",
-     *                             required=true,
-     *                             nullable=false,
+     *                             nullable="false",
      *                             description="Если viewingStatus = private и нужно дать только права на чтение, то ввести visibilityPassword; дать права на чтение и запись - modifyPassword.",
      *                             minLength=8,
      *                             maxLength=22,
@@ -44,7 +47,7 @@ class AuthController extends Controller
      *         ),
      *         @OA\Response(
      *             response="200",
-     *             description="Пользователь аутентифицирован и авторизован."
+     *             description="Пользователь аутентифицирован и авторизован.",
      *             @OA\JsonContent(
      *                 type="object",
      *                 properties={
@@ -65,10 +68,6 @@ class AuthController extends Controller
      *         )
      *     )
      * )
-     */
-
-    /**
-     * @throws InvalidPayload
      */
     public function checkPassword(Request $request, int $fileId): RedirectResponse|JsonResponse
     {

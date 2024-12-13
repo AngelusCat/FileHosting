@@ -11,14 +11,15 @@
 
     function changeVisibility()
     {
-        let link = "http://file/w/" + props.fileId;
+/*        let link = "http://file/w/" + props.fileId;
         fetch(link).then(response => response.json()).then(function (text) {
             if (text.isAuthorized) {
                 isFileBeingEdited.value = true;
             } else {
                 passwordShow.value = true;
             }
-        });
+        });*/
+        isFileBeingEdited.value = true;
     }
 
     function authorize(event)
@@ -31,7 +32,7 @@
 
 <template>
     <div v-if="isFileBeingEdited">
-            <form :action="action" method="POST" id="form">
+            <form :action="action" method="POST" id="form" enctype="multipart/form-data">
                 <input type="hidden" name="_token" :value="props.csrfToken" />
                 <input type="hidden" name="_method" value="PATCH">
             </form>
